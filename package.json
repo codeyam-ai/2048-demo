@@ -1,0 +1,17 @@
+{
+  "name": "2048-demo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/edopedia/2048.git",
+  "author": "Jared Cosulich <jared.cosulich@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "browserify": "^17.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "static-server": "^2.2.1"
+  },
+  "scripts": {
+    "build": "npx browserify js/ethos.js > js/bundle.js"
+  }
+}
