@@ -64,6 +64,9 @@ window.requestAnimationFrame(function () {
         }
         setMaxClaimedValue();
       }, 
+      onEmailSent: () => {
+        document.getElementById('email-message').style = '';
+      },
       className: 'start-button',
       children: "Get Started"
     }

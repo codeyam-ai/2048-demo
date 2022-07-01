@@ -89,7 +89,8 @@ HTMLActuator.prototype.addTile = function (tile) {
 
   // Put the tile on the board
   this.tileContainer.appendChild(wrapper);
-  this.showBadge(tile.value);
+
+  this.showBadge(tile.value, true);
 };
 
 HTMLActuator.prototype.applyClasses = function (element, classes) {
@@ -126,9 +127,13 @@ HTMLActuator.prototype.updateBestScore = function (bestScore) {
   this.bestContainer.textContent = bestScore;
 };
 
-HTMLActuator.prototype.showBadge = function (value) {
+HTMLActuator.prototype.showBadge = function (value, showBadgeArea) {
   const maxClaimedValue = window.maxClaimedValue || 0;
-  if (value >= 16 && value > this.maxTile && value > maxClaimedValue) {
+  if (value >= 16 && value >= this.maxTile && value > maxClaimedValue) {
+    if (showBadgeArea) {
+      document.getElementById('badge').style = '';
+    }
+
     const badgeImage = document.getElementById('badge-image');
     const badgeDescription = document.getElementById('badge-description')
 
