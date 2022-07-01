@@ -648,6 +648,7 @@ hr {
   margin-bottom: 0;
 }
 
+.claim-button,
 .start-button,
 .restart-button {
   display: inline-block;

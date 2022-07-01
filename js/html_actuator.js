@@ -5,6 +5,7 @@ function HTMLActuator() {
   this.messageContainer = document.querySelector(".game-message");
 
   this.score = 0;
+  this.maxTile = 0;
 }
 
 HTMLActuator.prototype.actuate = function (grid, metadata) {
@@ -88,6 +89,7 @@ HTMLActuator.prototype.addTile = function (tile) {
 
   // Put the tile on the board
   this.tileContainer.appendChild(wrapper);
+  this.showBadge(tile.value);
 };
 
 HTMLActuator.prototype.applyClasses = function (element, classes) {
@@ -123,6 +125,55 @@ HTMLActuator.prototype.updateScore = function (score) {
 HTMLActuator.prototype.updateBestScore = function (bestScore) {
   this.bestContainer.textContent = bestScore;
 };
+
+HTMLActuator.prototype.showBadge = function (value) {
+  if (value >= 16 && value > this.maxTile) {
+    const badge = document.getElementById('badge');
+    badge.style = '';
+    const badgeImage = document.getElementById('badge-image');
+    const badgeDescription = document.getElementById('badge-description')
+
+    const images = {
+      16: {
+        image: 'https://arweave.net/sv0csl4RG5ikMBuaACrvojm-EzcbTi-3ThScTTsVBdc',
+        text: 'Casual Amateur'
+      },
+      32: {
+        image: 'https://arweave.net/_t8bsaO1Q7RjoxRIZSXQRwtl916L7m8XwSjeWg1fBa8',
+        text: 'Amateur'
+      },
+      64: {
+        image: 'https://arweave.net/2fTevWYameF4ZJtu9NxgWqa_fGjQ_f8Da0qTwTOI_Dg',
+        text: 'Impressive Amateur'
+      },
+      128: {
+        image: 'https://arweave.net/1z_SHqdfIQBb6QvIKkhvVn14PmxjltZnRdFSdsoJIDQ',
+        text: 'Novice Expert'
+      },
+      256: {
+        image: 'https://arweave.net/b7o0WJcyD0BHVvQvlqbgy1HRUQW7iuHpxLalzyL061E',
+        text: 'Growing Expert'
+      },
+      512: {
+        image: 'https://arweave.net/ql44u1TetxqFQLYW2f-VDGQGS_ZwC9o68USpdEuwKbs',
+        text: 'Expert'
+      },
+      1024: {
+        image: 'https://arweave.net/_SOBVh01rBEEnbXxF5rx9MaQBKFbtM5tZdvq0qzoC7A',
+        text: 'Amazing Expert'
+      },
+      2048: {
+        image: 'https://arweave.net/QW9doLmmWdQ-7t8GZ85HtY8yzutoir8lGEJP9zOPQqA',
+        text: 'Winner'
+      }
+    }
+
+    badgeImage.src = images[value].image;
+    badgeDescription.innerHTML = `This player has unlocked the ${value} tile on Ethos 2048. They are a ${images[value].text}!`;
+    this.maxTile = value;
+  }
+};
+
 
 HTMLActuator.prototype.message = function (won) {
   var type    = won ? "game-won" : "game-over";
