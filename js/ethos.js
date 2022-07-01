@@ -14,6 +14,9 @@ window.requestAnimationFrame(function () {
     const address = await _signer.getAddress()
     const suiContents = await lib.walletContents(address, 'sui')
     
+    const loader = document.getElementById('loader');
+    loader.style = 'display: none;'
+    
     let maxClaimedItem = {value: 0};
     for (const item of suiContents) {
       const value = parseInt(item.description.slice("This player has unlocked the ".length))
