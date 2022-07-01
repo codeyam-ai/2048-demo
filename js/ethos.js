@@ -55,6 +55,12 @@ window.requestAnimationFrame(function () {
           container.style = "display: none;";        
           document.getElementById('restart-button').style = "";
           document.getElementById('game').style = "";  
+          const logout = document.getElementById('logout')
+          logout.style = "";  
+          logout.onclick = async () => {
+            await lib.logout();
+            location.reload();
+          }
         }
         setMaxClaimedValue();
       }, 

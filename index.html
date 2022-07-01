@@ -28,7 +28,7 @@
     
     <div class="above-game">
       <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
-      <a class="restart-button" id='restart-button' style="display: none;">New Game</a>
+      <a class="restart-button" id='restart-button' style="display: none;">Reset Game</a>      
       <span id="ethos-start">Get Started</span>
     </div>
 
@@ -50,6 +50,12 @@
         <div id="claimed-badge" style="display: none;">
           <h3>Your Top Badge</h3>
           <img id='claimed-badge-image' src="https://arweave.net/-vPjkYD6pAxwyxwl6EmDbxoK0Og7wfNEc85pM2fzscU" width=300 height=300 />
+          <div style="margin-top: 12px;">
+            View in your <a target='_blank' href="http://localhost:3000/dashboard">Wallet</a>!
+          </div>
+        </div>
+        <div style="margin-top: 12px;">
+          <a id="logout" style="text-decoration: underline; display: none;">Log Out</a>
         </div>
       </div>
       <div class="game-container">
