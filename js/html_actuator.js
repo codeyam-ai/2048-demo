@@ -128,7 +128,7 @@ HTMLActuator.prototype.updateBestScore = function (bestScore) {
 };
 
 HTMLActuator.prototype.showBadge = function (value, showBadgeArea) {
-  const maxClaimedValue = window.maxClaimedValue || 0;
+  const maxClaimedValue = window.maxClaimedValue === undefined ? 9999 : window.maxClaimedValue;
   if (value >= 16 && value >= this.maxTile && value > maxClaimedValue) {
     if (showBadgeArea) {
       document.getElementById('badge').style = '';

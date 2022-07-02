@@ -10,7 +10,8 @@ window.requestAnimationFrame(function () {
     network: 'sui'
   })
 
-  const setMaxClaimedValue = async () => {    
+  const setMaxClaimedValue = async () => { 
+    if (!_signer) return;   
     const address = await _signer.getAddress()
     const suiContents = await lib.walletContents(address, 'sui')
     
@@ -29,9 +30,11 @@ window.requestAnimationFrame(function () {
     const badgeDescription = document.getElementById('badge-description').innerHTML;
     const badgeValue = parseInt(badgeDescription.slice("This player has unlocked the ".length))
 
+    const badge = document.getElementById('badge');
     if (badgeValue > maxClaimedItem.value) {
-      const badge = document.getElementById('badge');
       badge.style = ''  
+    } else {
+      badge.style = 'display: none;'
     }
 
     if (maxClaimedItem.value > 0) {
@@ -87,7 +90,7 @@ window.requestAnimationFrame(function () {
         unpopulatedTransaction: {
           moduleName: 'devnet_nft',
           functionName: 'mint',
-          gasBudget: 30000,
+          gasBudget: 1000,
           inputValues: [
             "Ethos 2048 Game",
             badgeDescription,
