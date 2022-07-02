@@ -79,6 +79,15 @@ window.requestAnimationFrame(function () {
 
   const claimButton = document.getElementById('claim-button');
   claimButton.onclick = () => {
+    const badge = document.getElementById('badge');
+    badge.style = 'display: none';
+
+    const claimedBadge = document.getElementById('claimed-badge');
+    claimedBadge.style = 'display: none';
+
+    const loader = document.getElementById('loader');
+    loader.style = ''
+
     const badgeImage = document.getElementById('badge-image');
     const badgeDescription = document.getElementById('badge-description').innerHTML;
     const badgeSrc= badgeImage.getAttribute('src');
@@ -99,8 +108,11 @@ window.requestAnimationFrame(function () {
         },
         // onSigned: () => setLoading(true),
         onComplete: async () => {
+
           lib.hideWallet();
-          setMaxClaimedValue();
+          await setMaxClaimedValue();
+
+          loader.style = 'display: none';
           // setMessage(null);
           // setLoading(false);
           // oMint();
