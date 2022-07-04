@@ -1797,10 +1797,10 @@ ethjs-util@0.1.6, ethjs-util@^0.1.3:
     is-hex-prefixed "1.0.0"
     strip-hex-prefix "1.0.0"
 
-ethos-wallet-beta@^0.0.41:
-  version "0.0.41"
-  resolved "https://registry.yarnpkg.com/ethos-wallet-beta/-/ethos-wallet-beta-0.0.41.tgz#5a62c863a6d2c78953b47ffd222922c2d45bdbd8"
-  integrity sha512-rH6wjPgSxUiaW15F6gU8g19ZYBVgrjPgGaW/+TZw2tXQ8ea0sOGroKBae2Cep9CuDNcelKMAFfwCev/pAJjgzA==
+ethos-wallet-beta@^0.0.42:
+  version "0.0.42"
+  resolved "https://registry.yarnpkg.com/ethos-wallet-beta/-/ethos-wallet-beta-0.0.42.tgz#483474dd5cdcb19fb5427fb0a1802fd6cd6bb867"
+  integrity sha512-PCf0QCADOwwQZw18++OpnhjrswgADqHHdGpQmtD+KQ6ONKBNiJTvc4cSuCTryGL5U4camuxh7vor/idVxmIt3A==
   dependencies:
     ethers "^5.6.8"
     store2 "^2.13.2"
