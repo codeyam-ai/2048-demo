@@ -5,7 +5,7 @@ const { components, lib } = require('ethos-wallet-beta')
 window.requestAnimationFrame(function () {
   let _signer;
   lib.initialize({
-    walletAppUrl: 'https://ethos-sui.onrender.com',
+    walletAppUrl: 'http://localhost:3000',
     appId: '2048-demo',
     network: 'sui'
   })
