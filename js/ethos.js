@@ -4,16 +4,19 @@ const { components, lib } = require('ethos-wallet-beta')
 
 window.requestAnimationFrame(function () {
   let _signer;
-  
-  const walletAppUrl = window.location.href.startsWith('file') ?
-    'http://localhost:3000' :    
-    'https://ethos-sui.onrender.com'
 
-  lib.initialize({
+  const walletAppUrl = window.location.href.startsWith('file') ?
+  'http://localhost:3000' :    
+  'https://ethos-sui.onrender.com'
+
+  const ethosConfiguration = {
     walletAppUrl: walletAppUrl,
     appId: '2048-demo',
+    chain: 'sui',
     network: 'sui'
-  })
+  }
+
+  lib.initialize(ethosConfiguration)
 
   const setMaxClaimedValue = async () => { 
     if (!_signer) return;   
