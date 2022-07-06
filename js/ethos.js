@@ -57,6 +57,7 @@ window.requestAnimationFrame(function () {
   const button = React.createElement(
     components.styled.SignInButton, 
     { 
+      key: 'sign-in-button',
       onClick: () => window.signIn = true,
       onEmailSent: () => {
         document.getElementById('email-message').style = '';
@@ -71,6 +72,8 @@ window.requestAnimationFrame(function () {
     {
       ethosConfiguration,
       onProviderSelected: async ({ provider, signer }) => {
+        document.getElementById('start-loader').style = "display: none;";
+
         _signer = signer;
         if (signer) {
           window.signIn = false;
@@ -83,6 +86,8 @@ window.requestAnimationFrame(function () {
             await lib.logout();
             location.reload();
           }
+        } else {
+          container.style = "";    
         }
         setMaxClaimedValue();
       },
