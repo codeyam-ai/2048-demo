@@ -16,8 +16,6 @@ window.requestAnimationFrame(function () {
     network: 'sui'
   }
 
-  lib.initialize(ethosConfiguration)
-
   const setMaxClaimedValue = async () => { 
     if (!_signer) return;   
     const address = await _signer.getAddress()
@@ -55,10 +53,23 @@ window.requestAnimationFrame(function () {
   }
 
   const container = document.getElementById('ethos-start')
+
   const button = React.createElement(
     components.styled.SignInButton, 
     { 
       onClick: () => window.signIn = true,
+      onEmailSent: () => {
+        document.getElementById('email-message').style = '';
+      },
+      className: 'start-button',
+      children: "Get Started"
+    }
+  )
+
+  const wrapper = React.createElement(
+    components.EthosWrapper,
+    {
+      ethosConfiguration,
       onProviderSelected: async ({ provider, signer }) => {
         _signer = signer;
         if (signer) {
@@ -74,16 +85,13 @@ window.requestAnimationFrame(function () {
           }
         }
         setMaxClaimedValue();
-      }, 
-      onEmailSent: () => {
-        document.getElementById('email-message').style = '';
       },
-      className: 'start-button',
-      children: "Get Started"
+      children: [ button ]
     }
   )
+
   const root = ReactDOM.createRoot(container);
-  root.render(button);
+  root.render(wrapper);
 
   const claimButton = document.getElementById('claim-button');
   claimButton.onclick = () => {
@@ -101,19 +109,21 @@ window.requestAnimationFrame(function () {
     const badgeSrc= badgeImage.getAttribute('src');
 
     try {
-      lib.transact({
+      const details = {
         network: 'sui',
         address: '0x0000000000000000000000000000000000000002',
-        unpopulatedTransaction: {
-          moduleName: 'devnet_nft',
-          functionName: 'mint',
-          gasBudget: 1000,
-          inputValues: [
-            "Ethos 2048 Game",
-            badgeDescription,
-            badgeSrc
-          ]
-        },
+        moduleName: 'devnet_nft',
+        functionName: 'mint',
+        inputValues: [
+          "Ethos 2048 Game",
+          badgeDescription,
+          badgeSrc
+        ],
+        gasBudget: 1000
+      }
+
+      lib.transact({
+        details,
         // onSigned: () => setLoading(true),
         onComplete: async () => {
 
