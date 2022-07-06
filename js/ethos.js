@@ -5,7 +5,7 @@ const { components, lib } = require('ethos-wallet-beta')
 window.requestAnimationFrame(function () {
   let _signer;
 
-  const walletAppUrl = window.location.href.startsWith('file') ?
+  const walletAppUrl = window.location.href.startsWith('file') || window.location.href.startsWith('http://127.0.0.1:') ?
   'http://localhost:3000' :    
   'https://ethos-sui.onrender.com'
 
