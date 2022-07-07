@@ -943,3 +943,38 @@ hr {
     margin-top: 30px !important;
   }
 }
+
+.left-sidebar {
+  position: absolute;
+  left: -330px;
+  top: 0;
+  text-align: center;
+  width: 300px;
+}
+
+.right-sidebar {
+  position: absolute;
+  right: -330px;
+  top: -108px;
+  text-align: center;
+}
+
+.mobile-warning {
+  display: none;
+}
+
+@media screen and (max-width: 1200px) {
+  .mobile-warning {
+    display: block;
+    padding: 45px 0;
+    text-align: center;
+  }
+
+  .left-sidebar {
+    display: none;
+  }
+
+  .right-sidebar {
+    display: none;
+  }
+}
