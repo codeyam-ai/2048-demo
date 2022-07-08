@@ -72,6 +72,7 @@ window.requestAnimationFrame(function () {
     {
       ethosConfiguration,
       onProviderSelected: async ({ provider, signer }) => {
+        console.log("ONPROVIDERSELECTED", provider, signer)
         document.getElementById('start-loader').style = "display: none;";
 
         _signer = signer;
