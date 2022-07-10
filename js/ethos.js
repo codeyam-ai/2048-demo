@@ -5,11 +5,11 @@ const { components, lib } = require('ethos-wallet-beta')
 window.requestAnimationFrame(function () {
   let _signer;
 
-  // const walletAppUrl = window.location.href.startsWith('file') || window.location.href.startsWith('http://127.0.0.1:') ?
-  // 'http://localhost:3000' :    
-  // 'https://ethos-sui.onrender.com'
+  const walletAppUrl = window.location.href.startsWith('file') || window.location.href.startsWith('http://127.0.0.1:') ?
+  'http://localhost:3000' :    
+  'https://ethos-sui.onrender.com'
 
-  const walletAppUrl = 'https://ethos-sui.onrender.com'
+  // const walletAppUrl = 'https://ethos-sui.onrender.com'
 
   const ethosConfiguration = {
     walletAppUrl: walletAppUrl,
