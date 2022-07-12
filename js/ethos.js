@@ -8,9 +8,10 @@ window.requestAnimationFrame(function () {
   const walletAppUrl = window.location.href.startsWith('file') || window.location.href.startsWith('http://127.0.0.1:') ?
   'http://localhost:3000' :  
   (
-    window.location.href.indexOf('-staging') ?
-      'https://ethos-sui.onrender.com' :
-      'https://sui-wallet-staging.onrender.com'
+    window.location.href.indexOf('-staging') > -1 ?
+      'https://sui-wallet-staging.onrender.com' :
+      'https://ethos-sui.onrender.com'
+      
   )  
 
   // const walletAppUrl = 'https://ethos-sui.onrender.com'
