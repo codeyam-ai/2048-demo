@@ -108,6 +108,7 @@ window.requestAnimationFrame(function () {
 
   const claimButton = document.getElementById('claim-button');
   claimButton.onclick = () => {
+    console.log("HI")
     const badge = document.getElementById('badge');
     badge.style = 'display: none';
 
