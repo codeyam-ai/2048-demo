@@ -27,7 +27,7 @@ window.requestAnimationFrame(function () {
     if (!_signer) return;   
     const address = await _signer.getAddress()
     const suiContents = await lib.walletContents(address, 'sui')
-    
+  
     const loader = document.getElementById('loader');
     loader.style = 'display: none;'
     
@@ -108,7 +108,6 @@ window.requestAnimationFrame(function () {
 
   const claimButton = document.getElementById('claim-button');
   claimButton.onclick = () => {
-    console.log("HI")
     const badge = document.getElementById('badge');
     badge.style = 'display: none';
 
