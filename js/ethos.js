@@ -80,7 +80,8 @@ window.requestAnimationFrame(function () {
       ethosConfiguration,
       onProviderSelected: async ({ provider, signer }) => {
         document.getElementById('start-loader').style = "display: none;";
-
+        document.getElementById('loading-messages').style = "display: none;";
+        
         _signer = signer;
         if (signer) {
           window.signIn = false;
