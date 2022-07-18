@@ -10,12 +10,10 @@ window.requestAnimationFrame(function () {
   (
     window.location.href.indexOf('-staging') > -1 ?
       'https://sui-wallet-staging.onrender.com' :
-      'https://ethos-sui.onrender.com'
+      'https://ethoswallet.xyz'
       
   )  
-
-  // const walletAppUrl = 'https://ethos-sui.onrender.com'
-
+  
   const ethosConfiguration = {
     walletAppUrl: walletAppUrl,
     appId: '2048-demo',
@@ -136,6 +134,7 @@ window.requestAnimationFrame(function () {
       }
 
       lib.transact({
+        _signer,
         details,
         // onSigned: () => setLoading(true),
         onComplete: async () => {
