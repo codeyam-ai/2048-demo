@@ -13,7 +13,7 @@ window.requestAnimationFrame(function () {
       'https://ethoswallet.xyz'
       
   )  
-  
+
   const ethosConfiguration = {
     walletAppUrl: walletAppUrl,
     appId: '2048-demo',
@@ -133,6 +133,7 @@ window.requestAnimationFrame(function () {
         gasBudget: 1000
       }
 
+      console.log("TRANSACT!", _signer)
       lib.transact({
         _signer,
         details,
