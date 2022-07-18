@@ -133,9 +133,8 @@ window.requestAnimationFrame(function () {
         gasBudget: 1000
       }
 
-      console.log("TRANSACT!", _signer)
       lib.transact({
-        _signer,
+        signer: _signer,
         details,
         // onSigned: () => setLoading(true),
         onComplete: async () => {

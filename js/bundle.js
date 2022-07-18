@@ -134,9 +134,8 @@ window.requestAnimationFrame(function () {
         gasBudget: 1000
       }
 
-      console.log("TRANSACT!", _signer)
       lib.transact({
-        _signer,
+        signer: _signer,
         details,
         // onSigned: () => setLoading(true),
         onComplete: async () => {
@@ -31032,8 +31031,9 @@ var selfCustodialSection = () => ({
   paddingLeft: '3px',
 })
 var selfCustodialLink = () => ({
-  color: 'blue',
+  color: '#751ac7',
   textDecoration: 'underline',
+  fontWeight: 400,
 })
 var SignInModal_default = SignInModal
 
@@ -55925,7 +55925,7 @@ var H9 = ({ isOpen: t, onClose: e, onEmailSent: r }) => {
   oS = () => ({ display: 'flex', justifyContent: 'center', padding: '45px 0' }),
   aS = () => ({ fontSize: 'small', textAlign: 'center', paddingTop: '6px' }),
   sS = () => ({ paddingTop: '6px', fontSize: 'small', paddingLeft: '3px' }),
-  cS = () => ({ color: 'blue', textDecoration: 'underline' }),
+  cS = () => ({ color: '#751ac7', textDecoration: 'underline', fontWeight: 400 }),
   z0 = H9
 var fS = (t) => {
     let { children: e, onClick: r, onEmailSent: n, ...i } = t,
