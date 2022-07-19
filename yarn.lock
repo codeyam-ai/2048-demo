@@ -891,10 +891,10 @@ ethers@^5.6.8:
     "@ethersproject/web" "5.6.1"
     "@ethersproject/wordlists" "5.6.1"
 
-ethos-wallet-beta@^0.0.77:
-  version "0.0.77"
-  resolved "https://registry.yarnpkg.com/ethos-wallet-beta/-/ethos-wallet-beta-0.0.77.tgz#2403e25357e038434deb8bf53683334392f8f51e"
-  integrity sha512-Wkb53BCKRyMMVJSvCKWH50EgvX8397hu5lqReyUSlleLaKaS5bD4nG/DMXW7qaCh/ca/l9qU/MUdNoaPk3BENQ==
+ethos-wallet-beta@^0.0.78:
+  version "0.0.78"
+  resolved "https://registry.yarnpkg.com/ethos-wallet-beta/-/ethos-wallet-beta-0.0.78.tgz#09d3f8e8b64cd0dcb31c3bef711ebd47f8849080"
+  integrity sha512-5BVXRyDtR0YGFxWBnpOUz+SaJucSpOca/ljAKr2PvyEl1Fve6jaQaDmtdbEFY0pbbXeSEAb0dOcxQiqf6A9zsQ==
   dependencies:
     ethers "^5.6.8"
     store2 "^2.13.2"
