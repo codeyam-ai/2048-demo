@@ -114,7 +114,7 @@ window.requestAnimationFrame(function () {
   root.render(wrapper);
 
   const claimButton = document.getElementById('claim-button');
-  claimButton.onclick = async () => {
+  claimButton.onclick = () => {
     const badge = document.getElementById('badge');
     badge.style = 'display: none';
 
@@ -142,12 +142,12 @@ window.requestAnimationFrame(function () {
         gasBudget: 1000
       }
 
-      const result = await lib.transact({
+      lib.transact({
         signer: _signer,
         details,
         // onSigned: () => setLoading(true),
-        onComplete: async () => {
-
+        onComplete: async (result) => {
+          console.log("ON COMPLETE RESULT", result)
           lib.hideWallet();
           await setMaxClaimedValue();
 
@@ -157,8 +157,6 @@ window.requestAnimationFrame(function () {
           // oMint();
         }
       })
-
-      console.log("mint result", result)
     } catch (error) {
       console.log(error);
     }
