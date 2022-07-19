@@ -25,6 +25,7 @@ window.requestAnimationFrame(function () {
     if (!_signer) return;   
     const address = await _signer.getAddress()
     const suiContents = await lib.walletContents(address, 'sui')
+    console.log("CONTENTS", suiContents)
   
     const loader = document.getElementById('loader');
     loader.style = 'display: none;'
@@ -92,6 +93,10 @@ window.requestAnimationFrame(function () {
             await lib.logout();
             location.reload();
           }
+
+          // if (signer.extension) {
+          //   const balance = lib.balance
+          // }
         } else {
           container.style = "";    
         }
