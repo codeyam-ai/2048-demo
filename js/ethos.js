@@ -146,7 +146,8 @@ window.requestAnimationFrame(function () {
         details,
         // onSigned: () => setLoading(true),
         onComplete: async (result) => {
-          console.log("ON COMPLETE RESULT", result)
+          const completedResult = await result;
+          console.log("ON COMPLETE RESULT", completedResult)
           lib.hideWallet();
           await setMaxClaimedValue();
 
