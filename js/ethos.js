@@ -11,7 +11,6 @@ window.requestAnimationFrame(function () {
     window.location.href.indexOf('-staging') > -1 ?
       'https://sui-wallet-staging.onrender.com' :
       'https://ethoswallet.xyz'
-      
   )  
 
   const ethosConfiguration = {
@@ -24,14 +23,18 @@ window.requestAnimationFrame(function () {
   const setMaxClaimedValue = async () => { 
     if (!_signer) return;   
     const address = await _signer.getAddress()
-    const suiContents = await lib.walletContents(address, 'sui')
-    console.log("CONTENTS", suiContents)
-  
+    const { nfts, balance } = await lib.getWalletContents(address, 'sui')
+    
+    console.log("BALANCE", balance)
+    if (balance < 3000) {
+      lib.dripSui({ address });
+    }
+
     const loader = document.getElementById('loader');
     loader.style = 'display: none;'
     
     let maxClaimedItem = {value: 0};
-    for (const item of suiContents) {
+    for (const item of nfts) {
       const value = parseInt(item.description.slice("This player has unlocked the ".length))
       if (!value || value < maxClaimedItem.value) continue;
       item.value = value;
