@@ -14,6 +14,8 @@ window.requestAnimationFrame(function () {
       'https://ethoswallet.xyz'
   )  
 
+  document.getElementById('wallet-explorer-link').href = `${walletAppUrl}/dashboard`
+
   const ethosConfiguration = {
     walletAppUrl: walletAppUrl,
     appId: '2048-demo',
