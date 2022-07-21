@@ -31117,7 +31117,7 @@ var postMessage_default = postMessage
 // src/lib/logout.ts
 var logout = async (wallet = false) => {
   const { walletAppUrl } = getConfiguration_default()
-  ;(0, import_store28.default)('auth')('access_token', null)
+  import_store28.default.namespace('auth')('access_token', null)
   return new Promise((resolve) => {
     window.addEventListener('message', (message) => {
       log_default('logout', 'Message origin: ', message.origin, walletAppUrl, message)
@@ -56046,7 +56046,7 @@ var bS = (t) => {
 var pS = async (t = !1) => {
     let { walletAppUrl: e } = Rr()
     return (
-      (0, qm.default)('auth')('access_token', null),
+      qm.default.namespace('auth')('access_token', null),
       new Promise((r) => {
         window.addEventListener('message', (n) => {
           if ((me('logout', 'Message origin: ', n.origin, e, n), n.origin === e)) {
