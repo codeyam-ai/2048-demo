@@ -1,6 +1,7 @@
 const React = require('react');
 const ReactDOM = require('react-dom/client');
 const { components, lib } = require('ethos-wallet-beta')
+const { io } = require("socket.io-client");
 
 window.requestAnimationFrame(function () {
   let _signer;
@@ -165,4 +166,18 @@ window.requestAnimationFrame(function () {
   };
 
   document.getElementById('2048-title').onclick = () => lib.showWallet();
+
+  const SOCKET_URL = "https://sui-wallet-staging.onrender.com"
+  fetch(`${SOCKET_URL}/api/socket`).finally(() => {
+    const socket = io(SOCKET_URL)
+  
+    socket.on('connect', () => {
+      let index = 0;
+      setInterval(() => {
+        index++;
+        console.log("EMIT MESSAGE", index)
+        socket.emit('app-2048-demo', `MESSAGE ${index}`)
+      }, 3000)
+    })
+  })
 });
