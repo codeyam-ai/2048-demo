@@ -933,10 +933,10 @@ ethers@^5.6.8:
     "@ethersproject/web" "5.6.1"
     "@ethersproject/wordlists" "5.6.1"
 
-ethos-wallet-beta@^0.0.97:
-  version "0.0.97"
-  resolved "https://registry.yarnpkg.com/ethos-wallet-beta/-/ethos-wallet-beta-0.0.97.tgz#848b3b891dca2d1a5d2a486262bdaed92ef3b6b5"
-  integrity sha512-7HlrB3vRWu9aBeD8ur6TMr9bYcOnRIoRllAd3YTyEW9sto1NM6o+WL5xA1OrvUPJEzrs2VRuqv9UKgN0dAoQLg==
+ethos-wallet-beta@^0.0.98:
+  version "0.0.98"
+  resolved "https://registry.yarnpkg.com/ethos-wallet-beta/-/ethos-wallet-beta-0.0.98.tgz#1cbefef90d2c987af7ee4e1fce3895177d6a9fd0"
+  integrity sha512-EQPHY7SuKq6h6BL4pTJHhOAZPn9zD3iVqlNbx18VUGrt3KHWKWJ2CKHbZBDZp79f53cEgEv841ZiP0uXKqqPbw==
   dependencies:
     "@hcaptcha/react-hcaptcha" "^1.4.4"
     ethers "^5.6.8"

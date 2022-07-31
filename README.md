@@ -1,7 +1,8 @@
 # To Run
 
+- `yarn`
 - `yarn build`
-- `open index.html`
+- `open index.html` or `npx browser-sync start --server`
 
 # 2048
 
