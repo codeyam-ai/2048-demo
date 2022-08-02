@@ -977,10 +977,10 @@ ethers@^5.6.8:
     "@ethersproject/web" "5.6.1"
     "@ethersproject/wordlists" "5.6.1"
 
-ethos-wallet-beta@^0.0.105:
-  version "0.0.105"
-  resolved "https://registry.yarnpkg.com/ethos-wallet-beta/-/ethos-wallet-beta-0.0.105.tgz#54943a432ffb6c1b19a4662fcd75131ef065d127"
-  integrity sha512-H3OfuR1Ud3CEeL+Ac1jjN61m4SjWJZI3igG0IsFZDc360AT3M9KVr/MzEOKah66xnZZkBrbY4nDZlMrLXuBCKw==
+ethos-wallet-beta@^0.0.106:
+  version "0.0.106"
+  resolved "https://registry.yarnpkg.com/ethos-wallet-beta/-/ethos-wallet-beta-0.0.106.tgz#77fc0652bd2026418e63981c5541afd3b500dc9a"
+  integrity sha512-CpS8/qEilZSAbMPIhsSUK5N6reqHbdYB4r/hG5+t3LoUKtsR4jJymUuDl7TvEjuHdFq4RD2tz0r7+2/rDkX1Eg==
   dependencies:
     ethers "^5.6.8"
     qrcode "^1.5.1"
