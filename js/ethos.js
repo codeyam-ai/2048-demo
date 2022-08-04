@@ -1,6 +1,6 @@
 const React = require('react');
 const ReactDOM = require('react-dom/client');
-const { EthosWrapper, SignInButton, ethos } = require('ethos-wallet-beta')
+const { components, lib } = require('ethos-wallet-beta')
 
 window.requestAnimationFrame(function () {
   let _signer;
@@ -17,17 +17,19 @@ window.requestAnimationFrame(function () {
 
   const ethosConfiguration = {
     walletAppUrl: walletAppUrl,
-    appId: '2048-demo'
+    appId: '2048-demo',
+    chain: 'sui',
+    network: 'sui'
   }
 
   const setMaxClaimedValue = async () => { 
     if (!_signer) return;   
     const address = await _signer.getAddress()
-    const { nfts, balance } = await ethos.getWalletContents(address, 'sui')
+    const { nfts, balance } = await lib.getWalletContents(address, 'sui')
     
     console.log("BALANCE", balance)
     if (balance < 3000) {
-      ethos.dripSui({ address });
+      lib.dripSui({ address });
     }
 
     const loader = document.getElementById('loader');
@@ -64,20 +66,23 @@ window.requestAnimationFrame(function () {
   const container = document.getElementById('ethos-start')
 
   const button = React.createElement(
-    SignInButton, 
+    components.styled.SignInButton, 
     { 
       key: 'sign-in-button',
       onClick: () => window.signIn = true,
+      onEmailSent: () => {
+        document.getElementById('email-message').style = '';
+      },
       className: 'start-button',
       children: "Get Started"
     }
   )
 
   const wrapper = React.createElement(
-    EthosWrapper,
+    components.EthosWrapper,
     {
       ethosConfiguration,
-      onWalletConnected: async ({ provider, signer }) => {
+      onProviderSelected: async ({ provider, signer }) => {
         document.getElementById('start-loader').style = "display: none;";
         document.getElementById('loading-messages').style = "display: none;";
         
@@ -90,9 +95,13 @@ window.requestAnimationFrame(function () {
           const logout = document.getElementById('logout')
           logout.style = "";  
           logout.onclick = async () => {
-            await ethos.logout();
+            await lib.logout();
             location.reload();
           }
+
+          // if (signer.extension) {
+          //   const balance = lib.balance
+          // }
         } else {
           container.style = "";    
         }
@@ -134,14 +143,14 @@ window.requestAnimationFrame(function () {
         gasBudget: 1000
       }
 
-      ethos.transact({
+      lib.transact({
         signer: _signer,
         details,
         // onSigned: () => setLoading(true),
         onComplete: async (result) => {
           const completedResult = await result;
           console.log("COMPLETED RESULT", result)
-          ethos.hideWallet();
+          lib.hideWallet();
           await setMaxClaimedValue();
 
           loader.style = 'display: none';
@@ -155,5 +164,5 @@ window.requestAnimationFrame(function () {
     }
   };
 
-  document.getElementById('2048-title').onclick = () => ethos.showWallet();
+  document.getElementById('2048-title').onclick = () => lib.showWallet();
 });
