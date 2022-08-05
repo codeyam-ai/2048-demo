@@ -590,10 +590,10 @@ escape-string-regexp@^1.0.0:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha512-vbRorB5FUQWvla16U8R/qgaFIya2qGzwDrNmCZuYKrbdSUMG6I1ZCGQRefkRVhuOkIGVne7BQ35DSfo1qvJqFg==
 
-ethos-wallet-beta@^0.0.110:
-  version "0.0.110"
-  resolved "https://registry.yarnpkg.com/ethos-wallet-beta/-/ethos-wallet-beta-0.0.110.tgz#fc49c011997839888ec61cdb60df5a55434cd090"
-  integrity sha512-JFwvBcJ8lTc3ew/SPZVJSyUwxGkNNCd/0TURtuSV5O76bvM/9cfWAA77bbVCIZaTKBkTWSEE9rFyxtVfT3dDVQ==
+ethos-wallet-beta@^0.0.113:
+  version "0.0.113"
+  resolved "https://registry.yarnpkg.com/ethos-wallet-beta/-/ethos-wallet-beta-0.0.113.tgz#cdc0bf0cb8dc5ef8922c0410c0fcbfd5f3bbce70"
+  integrity sha512-nVWPKN0Q7+l/Je66LgdOMw6Xiu/IRX2vC/q8rDI53sAx8Dp4xwxlYz6e7N/jP3kjO4NIcWG5eUMbKYkItBcA5w==
   dependencies:
     qrcode "^1.5.1"
     react-google-recaptcha "^2.1.0"
