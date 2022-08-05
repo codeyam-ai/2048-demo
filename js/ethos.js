@@ -1,41 +1,39 @@
 const React = require('react');
 const ReactDOM = require('react-dom/client');
-const { components, lib } = require('ethos-wallet-beta')
+const { EthosWrapper, SignInButton, ethos } = require('ethos-wallet-beta')
 
 window.requestAnimationFrame(function () {
   let _signer;
 
   const walletAppUrl = window.location.href.startsWith('file') || window.location.href.startsWith('http://127.0.0.1:') ?
-  'http://localhost:3000' :  
-  (
-    window.location.href.indexOf('-staging') > -1 ?
-      'https://sui-wallet-staging.onrender.com' :
-      'https://ethoswallet.xyz'
-  )  
+    'http://localhost:3000' :
+    (
+      window.location.href.indexOf('-staging') > -1 ?
+        'https://sui-wallet-staging.onrender.com' :
+        'https://ethoswallet.xyz'
+    )
 
   document.getElementById('wallet-explorer-link').href = `${walletAppUrl}/dashboard`
 
   const ethosConfiguration = {
     walletAppUrl: walletAppUrl,
-    appId: '2048-demo',
-    chain: 'sui',
-    network: 'sui'
+    appId: '2048-demo'
   }
 
-  const setMaxClaimedValue = async () => { 
-    if (!_signer) return;   
+  const setMaxClaimedValue = async () => {
+    if (!_signer) return;
     const address = await _signer.getAddress()
-    const { nfts, balance } = await lib.getWalletContents(address, 'sui')
-    
+    const { nfts, balance } = await ethos.getWalletContents(address, 'sui')
+
     console.log("BALANCE", balance)
     if (balance < 3000) {
-      lib.dripSui({ address });
+      ethos.dripSui({ address });
     }
 
     const loader = document.getElementById('loader');
     loader.style = 'display: none;'
-    
-    let maxClaimedItem = {value: 0};
+
+    let maxClaimedItem = { value: 0 };
     for (const item of nfts) {
       const value = parseInt(item.description.slice("This player has unlocked the ".length))
       if (!value || value < maxClaimedItem.value) continue;
@@ -49,7 +47,7 @@ window.requestAnimationFrame(function () {
 
     const badge = document.getElementById('badge');
     if (badgeValue > maxClaimedItem.value) {
-      badge.style = ''  
+      badge.style = ''
     } else {
       badge.style = 'display: none;'
     }
@@ -57,57 +55,50 @@ window.requestAnimationFrame(function () {
     if (maxClaimedItem.value > 0) {
       const claimedBadge = document.getElementById('claimed-badge');
       claimedBadge.style = '';
-  
+
       const claimedBadgeImage = document.getElementById('claimed-badge-image');
-      claimedBadgeImage.src = maxClaimedItem.imageUri;  
+      claimedBadgeImage.src = maxClaimedItem.imageUri;
     }
   }
 
   const container = document.getElementById('ethos-start')
 
   const button = React.createElement(
-    components.styled.SignInButton, 
-    { 
+    SignInButton,
+    {
       key: 'sign-in-button',
       onClick: () => window.signIn = true,
-      onEmailSent: () => {
-        document.getElementById('email-message').style = '';
-      },
       className: 'start-button',
       children: "Get Started"
     }
   )
 
   const wrapper = React.createElement(
-    components.EthosWrapper,
+    EthosWrapper,
     {
       ethosConfiguration,
-      onProviderSelected: async ({ provider, signer }) => {
+      onWalletConnected: async ({ provider, signer }) => {
         document.getElementById('start-loader').style = "display: none;";
         document.getElementById('loading-messages').style = "display: none;";
-        
+
         _signer = signer;
         if (signer) {
           window.signIn = false;
-          container.style = "display: none;";        
+          container.style = "display: none;";
           document.getElementById('restart-button').style = "";
-          document.getElementById('game').style = "";  
+          document.getElementById('game').style = "";
           const logout = document.getElementById('logout')
-          logout.style = "";  
+          logout.style = "";
           logout.onclick = async () => {
-            await lib.logout();
+            await ethos.logout();
             location.reload();
           }
-
-          // if (signer.extension) {
-          //   const balance = lib.balance
-          // }
         } else {
-          container.style = "";    
+          container.style = "";
         }
         setMaxClaimedValue();
       },
-      children: [ button ]
+      children: [button]
     }
   )
 
@@ -127,7 +118,7 @@ window.requestAnimationFrame(function () {
 
     const badgeImage = document.getElementById('badge-image');
     const badgeDescription = document.getElementById('badge-description').innerHTML;
-    const badgeSrc= badgeImage.getAttribute('src');
+    const badgeSrc = badgeImage.getAttribute('src');
 
     try {
       const details = {
@@ -143,14 +134,14 @@ window.requestAnimationFrame(function () {
         gasBudget: 1000
       }
 
-      lib.transact({
+      ethos.transact({
         signer: _signer,
         details,
         // onSigned: () => setLoading(true),
         onComplete: async (result) => {
           const completedResult = await result;
           console.log("COMPLETED RESULT", result)
-          lib.hideWallet();
+          ethos.hideWallet();
           await setMaxClaimedValue();
 
           loader.style = 'display: none';
@@ -164,5 +155,5 @@ window.requestAnimationFrame(function () {
     }
   };
 
-  document.getElementById('2048-title').onclick = () => lib.showWallet();
+  document.getElementById('2048-title').onclick = () => ethos.showWallet();
 });
