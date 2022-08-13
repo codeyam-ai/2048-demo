@@ -236,73 +236,73 @@ var require_store2 = __commonJS({
           area.clear();
         },
         Store: function(id, area, namespace) {
-          var store10 = _.inherit(_.storeAPI, function(key, data, overwrite) {
+          var store11 = _.inherit(_.storeAPI, function(key, data, overwrite) {
             if (arguments.length === 0) {
-              return store10.getAll();
+              return store11.getAll();
             }
             if (typeof data === "function") {
-              return store10.transact(key, data, overwrite);
+              return store11.transact(key, data, overwrite);
             }
             if (data !== void 0) {
-              return store10.set(key, data, overwrite);
+              return store11.set(key, data, overwrite);
             }
             if (typeof key === "string" || typeof key === "number") {
-              return store10.get(key);
+              return store11.get(key);
             }
             if (typeof key === "function") {
-              return store10.each(key);
+              return store11.each(key);
             }
             if (!key) {
-              return store10.clear();
+              return store11.clear();
             }
-            return store10.setAll(key, data);
+            return store11.setAll(key, data);
           });
-          store10._id = id;
+          store11._id = id;
           try {
             var testKey = "__store2_test";
             area.setItem(testKey, "ok");
-            store10._area = area;
+            store11._area = area;
             area.removeItem(testKey);
           } catch (e) {
-            store10._area = _.storage("fake");
+            store11._area = _.storage("fake");
           }
-          store10._ns = namespace || "";
+          store11._ns = namespace || "";
           if (!_.areas[id]) {
-            _.areas[id] = store10._area;
+            _.areas[id] = store11._area;
           }
-          if (!_.apis[store10._ns + store10._id]) {
-            _.apis[store10._ns + store10._id] = store10;
+          if (!_.apis[store11._ns + store11._id]) {
+            _.apis[store11._ns + store11._id] = store11;
           }
-          return store10;
+          return store11;
         },
         storeAPI: {
           area: function(id, area) {
-            var store10 = this[id];
-            if (!store10 || !store10.area) {
-              store10 = _.Store(id, area, this._ns);
+            var store11 = this[id];
+            if (!store11 || !store11.area) {
+              store11 = _.Store(id, area, this._ns);
               if (!this[id]) {
-                this[id] = store10;
+                this[id] = store11;
               }
             }
-            return store10;
+            return store11;
           },
           namespace: function(namespace, singleArea) {
             if (!namespace) {
               return this._ns ? this._ns.substring(0, this._ns.length - 1) : "";
             }
-            var ns = namespace, store10 = this[ns];
-            if (!store10 || !store10.namespace) {
-              store10 = _.Store(this._id, this._area, this._ns + ns + ".");
+            var ns = namespace, store11 = this[ns];
+            if (!store11 || !store11.namespace) {
+              store11 = _.Store(this._id, this._area, this._ns + ns + ".");
               if (!this[ns]) {
-                this[ns] = store10;
+                this[ns] = store11;
               }
               if (!singleArea) {
                 for (var name in _.areas) {
-                  store10.area(name, _.areas[name]);
+                  store11.area(name, _.areas[name]);
                 }
               }
             }
-            return store10;
+            return store11;
           },
           isFake: function(force) {
             if (force) {
@@ -475,32 +475,32 @@ var require_store2 = __commonJS({
           }
         }
       };
-      var store9 = _.Store("local", function() {
+      var store10 = _.Store("local", function() {
         try {
           return localStorage;
         } catch (e) {
         }
       }());
-      store9.local = store9;
-      store9._ = _;
-      store9.area("session", function() {
+      store10.local = store10;
+      store10._ = _;
+      store10.area("session", function() {
         try {
           return sessionStorage;
         } catch (e) {
         }
       }());
-      store9.area("page", _.storage("page"));
+      store10.area("page", _.storage("page"));
       if (typeof define === "function" && define.amd !== void 0) {
         define("store2", [], function() {
-          return store9;
+          return store10;
         });
       } else if (typeof module2 !== "undefined" && module2.exports) {
-        module2.exports = store9;
+        module2.exports = store10;
       } else {
         if (window2.store) {
           _.conflict = window2.store;
         }
-        window2.store = store9;
+        window2.store = store10;
       }
     })(exports, exports && exports.define);
   }
@@ -3488,7 +3488,7 @@ __export(exports, {
 });
 
 // src/components/EthosWrapper.tsx
-var import_react3 = __toModule(require("react"));
+var import_react4 = __toModule(require("react"));
 
 // src/lib/getConfiguration.ts
 var import_store2 = __toModule(require_store2());
@@ -3500,7 +3500,7 @@ var getConfiguration = () => {
 var getConfiguration_default = getConfiguration;
 
 // src/lib/getIframe.ts
-var import_store23 = __toModule(require_store2());
+var import_store24 = __toModule(require_store2());
 
 // src/lib/log.ts
 var import_store22 = __toModule(require_store2());
@@ -3532,6 +3532,22 @@ if (typeof window !== "undefined") {
 }
 var log_default = log;
 
+// src/lib/postIFrameMessage.ts
+var import_store23 = __toModule(require_store2());
+var postIFrameMessage = (message) => {
+  var _a;
+  const iframe = getIframe_default();
+  if (!(iframe == null ? void 0 : iframe.getAttribute("readyToReceiveMessages"))) {
+    const messageStore = import_store23.default.namespace("iframeMessages");
+    const existingMessages = messageStore("messages") || [];
+    const result = messageStore("messages", [...existingMessages, message]);
+    log_default("Storing iframe message", result);
+    return;
+  }
+  (_a = iframe == null ? void 0 : iframe.contentWindow) == null ? void 0 : _a.postMessage(message, "*");
+};
+var postIFrameMessage_default = postIFrameMessage;
+
 // src/lib/getIframe.ts
 var getIframe = (show) => {
   const {appId} = getConfiguration_default();
@@ -3557,10 +3573,10 @@ var getIframe = (show) => {
       if (queryParams.toString().length > 0) {
         fullPath += "?" + queryParams.toString();
       }
-      import_store23.default.namespace("auth")("access_token", auth);
+      import_store24.default.namespace("auth")("access_token", auth);
       window.history.pushState({}, "", fullPath);
     } else {
-      const accessToken = import_store23.default.namespace("auth")("access_token");
+      const accessToken = import_store24.default.namespace("auth")("access_token");
       if (accessToken) {
         fullWalletAppUrl += `&auth=${accessToken}`;
       }
@@ -3580,8 +3596,20 @@ var getIframe = (show) => {
     document.body.appendChild(iframe);
     window.addEventListener("message", (message) => {
       if (message.origin === walletAppUrl) {
-        if (message.data.close) {
-          close();
+        const {action} = message.data;
+        switch (action) {
+          case "close":
+            close();
+            break;
+          case "ready":
+            iframe.setAttribute("readyToReceiveMessages", "true");
+            const messageStore = import_store24.default.namespace("iframeMessages");
+            const messages = messageStore("messages") || [];
+            for (const message2 of messages) {
+              postIFrameMessage_default(message2);
+            }
+            messageStore("messages", null);
+            break;
         }
       }
     });
@@ -3605,7 +3633,6 @@ var activeUser = () => {
   log_default("activeUser", "Calling Active User");
   const {walletAppUrl, appId} = getConfiguration_default();
   const resolver = (resolve) => {
-    var _a;
     const listener = (message2) => {
       log_default("activeUser", "Message Origin: ", message2.origin, walletAppUrl, message2);
       if (message2.origin === walletAppUrl) {
@@ -3619,9 +3646,9 @@ var activeUser = () => {
     };
     window.addEventListener("message", listener);
     const message = {action: "activeUser"};
-    const iframe = getIframe_default();
+    getIframe_default();
     log_default('activeUser", "Post message to the iframe', message);
-    (_a = iframe == null ? void 0 : iframe.contentWindow) == null ? void 0 : _a.postMessage(message, "*");
+    postIFrameMessage_default(message);
   };
   return new Promise(resolver);
 };
@@ -3683,17 +3710,17 @@ var getProvider = async (network) => {
 var getProvider_default = getProvider;
 
 // src/lib/initialize.ts
-var import_store24 = __toModule(require_store2());
+var import_store25 = __toModule(require_store2());
 var initialize = (ethosConfiguration) => {
-  const ethosStore = import_store24.default.namespace("ethos");
+  const ethosStore = import_store25.default.namespace("ethos");
   log_default("initialize", "Ethos Configuration", ethosConfiguration);
   ethosStore("configuration", ethosConfiguration);
 };
 var initialize_default = initialize;
 
-// src/lib/useSuiWallet.ts
+// src/hooks/useSuiWallet.ts
 var import_react = __toModule(require("react"));
-var import_store25 = __toModule(require_store2());
+var import_store26 = __toModule(require_store2());
 var useSuiWallet = () => {
   const [providerAndSigner, setProviderAndSigner] = (0, import_react.useState)(null);
   const suiWallet = () => window.suiWallet;
@@ -3721,7 +3748,7 @@ var useSuiWallet = () => {
     setProviderAndSigner({
       provider,
       signer,
-      context: null
+      contents: null
     });
   };
   const retrieveSuiAccount = async () => {
@@ -3746,7 +3773,7 @@ var useSuiWallet = () => {
     setTimeout(retrieveSuiAccount, 100);
     const storageListener = (event2) => {
       if (event2.type === "ethos-storage-changed") {
-        const suiStore = import_store25.default.namespace("sui");
+        const suiStore = import_store26.default.namespace("sui");
         const account = suiStore("account");
         log_default("useSuiWallet", "INIT SUI 4", account);
         initSignerAndProvider(account);
@@ -3764,7 +3791,7 @@ var useSuiWallet = () => {
     packageObjectId: details.packageObjectId || details.address,
     module: details.module || details.moduleName,
     function: details.function || details.functionName,
-    typeArguments: [],
+    typeArguments: details.typeArguments || [],
     arguments: details.arguments || details.inputValues
   });
   return providerAndSigner;
@@ -3780,11 +3807,12 @@ var listenForMobileConnection = async () => {
         const {action, data} = message.data;
         if (action !== "connect")
           return;
+        window.removeEventListener("message", connectionEventListener);
         if (!data.address) {
           resolve({provider: {}});
+          return;
         }
         ;
-        window.removeEventListener("message", connectionEventListener);
         const signer = {
           getAddress: () => data.address
         };
@@ -3811,6 +3839,46 @@ var defaultProviderAndSigner = {
 var ProviderAndSignerContext = (0, import_react2.createContext)(defaultProviderAndSigner);
 var ProviderAndSignerContext_default = ProviderAndSignerContext;
 
+// src/hooks/useAccount.ts
+var import_react3 = __toModule(require("react"));
+var useAccount = (providerAndSigner) => {
+  const [account, setAccount] = (0, import_react3.useState)(null);
+  (0, import_react3.useEffect)(() => {
+    if (!providerAndSigner.signer)
+      return;
+    const {walletAppUrl} = getConfiguration_default();
+    let listener;
+    const initAccount = async () => {
+      var _a;
+      const address = await ((_a = providerAndSigner.signer) == null ? void 0 : _a.getAddress());
+      listener = async (message2) => {
+        if (message2.origin === walletAppUrl) {
+          const {action, data} = message2.data;
+          if (action === "account") {
+            const {account: account2} = data;
+            console.log("ACOCUNT UPDATE RECEIVED", account2);
+            if (account2 && address && address === account2.address) {
+              setAccount(account2);
+            }
+          }
+        }
+      };
+      window.addEventListener("message", listener);
+      const message = {action: "account", data: {address}};
+      getIframe_default();
+      postIFrameMessage_default(message);
+    };
+    initAccount();
+    return () => {
+      if (listener) {
+        window.removeEventListener("account", listener);
+      }
+    };
+  }, [providerAndSigner]);
+  return account;
+};
+var useAccount_default = useAccount;
+
 // src/components/EthosWrapper.tsx
 var EthosWrapper = ({ethosConfiguration, onWalletConnected, children}) => {
   if (!ethosConfiguration.chain)
@@ -3819,40 +3887,51 @@ var EthosWrapper = ({ethosConfiguration, onWalletConnected, children}) => {
     ethosConfiguration.network = "sui";
   if (!ethosConfiguration.walletAppUrl)
     ethosConfiguration.walletAppUrl = "https://ethoswallet.xyz/";
-  const methodsChecked = (0, import_react3.useRef)({
+  const signerFound = (0, import_react4.useRef)(false);
+  const methodsChecked = (0, import_react4.useRef)({
     "ethos": false,
     "mobile": false,
     "extension": false
   });
   log_default("EthosWrapper", "EthosWrapper Configuration:", ethosConfiguration);
-  const [providerAndSigner, setProviderAndSigner] = (0, import_react3.useState)({
+  const [providerAndSigner, setProviderAndSigner] = (0, import_react4.useState)({
     provider: null,
     signer: null,
     contents: null
   });
   const suiProviderAndSigner = useSuiWallet_default();
-  const _onProviderSelected = (0, import_react3.useCallback)((providerAndSigner2, type) => {
-    log_default("EthosWrapper", "_onProviderSelected called with: ", type, providerAndSigner2);
-    methodsChecked.current[type] = true;
-    if (Object.values(methodsChecked.current).includes(false))
+  const account = useAccount_default(providerAndSigner);
+  const _onProviderSelected = (0, import_react4.useCallback)((providerAndSigner2, type) => {
+    if (signerFound.current)
       return;
+    if (type) {
+      methodsChecked.current[type] = true;
+    }
+    const allMethodsChecked = !Object.values(methodsChecked.current).includes(false);
+    if (!providerAndSigner2.signer && !allMethodsChecked)
+      return;
+    if (providerAndSigner2.signer) {
+      signerFound.current = true;
+    }
     setProviderAndSigner(providerAndSigner2);
     onWalletConnected && onWalletConnected(providerAndSigner2);
   }, []);
-  (0, import_react3.useEffect)(() => {
+  (0, import_react4.useEffect)(() => {
+    initialize_default(ethosConfiguration);
+  }, []);
+  (0, import_react4.useEffect)(() => {
     listenForMobileConnection_default().then((mobileProviderAndSigner) => {
       log_default("EthosWrapper", "Setting _onProviderSelected1");
       _onProviderSelected(mobileProviderAndSigner, "mobile");
     });
   }, []);
-  (0, import_react3.useEffect)(() => {
+  (0, import_react4.useEffect)(() => {
     if (!suiProviderAndSigner)
       return;
     log_default("EthosWrapper", "Setting _onProviderSelected2");
     _onProviderSelected(suiProviderAndSigner, "extension");
   }, [suiProviderAndSigner, _onProviderSelected]);
-  (0, import_react3.useEffect)(() => {
-    initialize_default(ethosConfiguration);
+  (0, import_react4.useEffect)(() => {
     const fetchEthosProvider = async () => {
       const ethosProvider = await getProvider_default();
       log_default("EthosWrapper", "Setting _onProviderSelected3");
@@ -3864,45 +3943,32 @@ var EthosWrapper = ({ethosConfiguration, onWalletConnected, children}) => {
     };
     fetchEthosProvider();
   }, []);
-  (0, import_react3.useEffect)(() => {
-    const listener = async (message) => {
-      var _a;
-      if (message.origin === ethosConfiguration.walletAppUrl) {
-        const {action, data} = message.data;
-        if (action === "account") {
-          const {account} = data;
-          const address = await ((_a = providerAndSigner.signer) == null ? void 0 : _a.getAddress());
-          if (account && address && address === account.address) {
-            log_default("EthosWrapper", "Setting _onProviderSelected4");
-            _onProviderSelected({
-              ...providerAndSigner,
-              contents: account.contents
-            }, "ethos");
-          }
-        }
-      }
-    };
-    window.addEventListener("message", listener);
-    return () => window.removeEventListener("account", listener);
-  }, [providerAndSigner]);
-  const childrenWithProviderAndSigner = import_react3.default.Children.map(children, (child) => {
-    if (import_react3.default.isValidElement(child)) {
-      return import_react3.default.cloneElement(child, {...providerAndSigner});
+  (0, import_react4.useEffect)(() => {
+    if (!account)
+      return;
+    setProviderAndSigner((prev) => ({
+      ...prev,
+      contents: account.contents
+    }));
+  }, [account]);
+  const childrenWithProviderAndSigner = import_react4.default.Children.map(children, (child) => {
+    if (import_react4.default.isValidElement(child)) {
+      return import_react4.default.cloneElement(child, {...providerAndSigner});
     }
     return child;
   });
-  return /* @__PURE__ */ import_react3.default.createElement(ProviderAndSignerContext_default.Provider, {
+  return /* @__PURE__ */ import_react4.default.createElement(ProviderAndSignerContext_default.Provider, {
     value: providerAndSigner
   }, childrenWithProviderAndSigner);
 };
 var EthosWrapper_default = EthosWrapper;
 
 // src/components/styled/SignInButton.tsx
-var import_react17 = __toModule(require("react"));
+var import_react18 = __toModule(require("react"));
 
 // src/components/svg/Loader.tsx
-var import_react4 = __toModule(require("react"));
-var Loader = ({width = 100, color = "#333"}) => /* @__PURE__ */ import_react4.default.createElement("svg", {
+var import_react5 = __toModule(require("react"));
+var Loader = ({width = 100, color = "#333"}) => /* @__PURE__ */ import_react5.default.createElement("svg", {
   version: "1.1",
   id: "L4",
   xmlns: "http://www.w3.org/2000/svg",
@@ -3912,37 +3978,37 @@ var Loader = ({width = 100, color = "#333"}) => /* @__PURE__ */ import_react4.de
   width,
   height: width * (20 / 54),
   enableBackground: "new 0 0 0 0"
-}, /* @__PURE__ */ import_react4.default.createElement("circle", {
+}, /* @__PURE__ */ import_react5.default.createElement("circle", {
   fill: color,
   stroke: "none",
   cx: "6",
   cy: "10",
   r: "6"
-}, /* @__PURE__ */ import_react4.default.createElement("animate", {
+}, /* @__PURE__ */ import_react5.default.createElement("animate", {
   attributeName: "opacity",
   dur: "1.5s",
   values: "0;1;0",
   repeatCount: "indefinite",
   begin: "0.1"
-})), /* @__PURE__ */ import_react4.default.createElement("circle", {
+})), /* @__PURE__ */ import_react5.default.createElement("circle", {
   fill: color,
   stroke: "none",
   cx: "26",
   cy: "10",
   r: "6"
-}, /* @__PURE__ */ import_react4.default.createElement("animate", {
+}, /* @__PURE__ */ import_react5.default.createElement("animate", {
   attributeName: "opacity",
   dur: "1.5s",
   values: "0;1;0",
   repeatCount: "indefinite",
   begin: "0.5"
-})), /* @__PURE__ */ import_react4.default.createElement("circle", {
+})), /* @__PURE__ */ import_react5.default.createElement("circle", {
   fill: color,
   stroke: "none",
   cx: "46",
   cy: "10",
   r: "6"
-}, /* @__PURE__ */ import_react4.default.createElement("animate", {
+}, /* @__PURE__ */ import_react5.default.createElement("animate", {
   attributeName: "opacity",
   dur: "1.5s",
   values: "0;1;0",
@@ -3952,38 +4018,28 @@ var Loader = ({width = 100, color = "#333"}) => /* @__PURE__ */ import_react4.de
 var Loader_default = Loader;
 
 // src/components/headless/Button.tsx
-var import_react5 = __toModule(require("react"));
+var import_react6 = __toModule(require("react"));
 var Button = (props) => {
   const {children, onClick, isWorking, workingComponent, ...reactProps} = props;
-  return /* @__PURE__ */ import_react5.default.createElement("button", {
+  return /* @__PURE__ */ import_react6.default.createElement("button", {
     onClick,
     ...reactProps
-  }, isWorking ? workingComponent || /* @__PURE__ */ import_react5.default.createElement("span", {
+  }, isWorking ? workingComponent || /* @__PURE__ */ import_react6.default.createElement("span", {
     className: "block p-2"
-  }, /* @__PURE__ */ import_react5.default.createElement(Loader_default, {
+  }, /* @__PURE__ */ import_react6.default.createElement(Loader_default, {
     width: 30
-  })) : /* @__PURE__ */ import_react5.default.createElement(import_react5.default.Fragment, null, children));
+  })) : /* @__PURE__ */ import_react6.default.createElement(import_react6.default.Fragment, null, children));
 };
 var Button_default = Button;
 
 // src/components/styled/SignInModal.tsx
-var import_react16 = __toModule(require("react"));
+var import_react17 = __toModule(require("react"));
 
 // src/lib/login.ts
-var import_store26 = __toModule(require_store2());
-
-// src/lib/postMessage.ts
-var postMessage = (message) => {
-  var _a;
-  const iframe = getIframe_default();
-  (_a = iframe == null ? void 0 : iframe.contentWindow) == null ? void 0 : _a.postMessage(message, "*");
-};
-var postMessage_default = postMessage;
-
-// src/lib/login.ts
+var import_store27 = __toModule(require_store2());
 var login = async ({email, provider, appId}) => {
   const {walletAppUrl} = getConfiguration_default();
-  const userStore = import_store26.default.namespace("users");
+  const userStore = import_store27.default.namespace("users");
   if (provider) {
     const returnTo = location.href;
     const fullUrl = `${walletAppUrl}/auth?appId=${appId}&returnTo=${encodeURIComponent(returnTo)}`;
@@ -3997,13 +4053,12 @@ var login = async ({email, provider, appId}) => {
         if (action !== "login")
           return;
         window.removeEventListener("message", loginEventListener);
-        console.log("LOGIN USER DATA", data);
         userStore("current", data);
         resolve(data);
       }
     };
     window.addEventListener("message", loginEventListener);
-    postMessage_default({
+    postIFrameMessage_default({
       action: "login",
       data: {
         email,
@@ -4017,56 +4072,56 @@ var login = async ({email, provider, appId}) => {
 var login_default = login;
 
 // src/components/svg/Ethos.tsx
-var import_react6 = __toModule(require("react"));
-var Ethos = ({width = 24, color = "#1e293b"}) => /* @__PURE__ */ import_react6.default.createElement("svg", {
+var import_react7 = __toModule(require("react"));
+var Ethos = ({width = 24, color = "#1e293b"}) => /* @__PURE__ */ import_react7.default.createElement("svg", {
   width,
   height: width * 65 / 47,
   viewBox: "0 0 47 65",
   fill: "none",
   xmlns: "http://www.w3.org/2000/svg"
-}, /* @__PURE__ */ import_react6.default.createElement("path", {
+}, /* @__PURE__ */ import_react7.default.createElement("path", {
   d: "M6.00471 1H40.0029C42.7644 1 45.0029 3.23858 45.0029 6V44.8425C45.0029 47.604 42.7643 49.8425 40.0029 49.8425H6.0047C3.24328 49.8425 1.0047 47.604 1.0047 44.8425V6C1.0047 3.23858 3.24329 1 6.00471 1Z",
   stroke: color,
   strokeWidth: "2"
-}), /* @__PURE__ */ import_react6.default.createElement("path", {
+}), /* @__PURE__ */ import_react7.default.createElement("path", {
   d: "M6.68764 3.64648L30.6631 14.8026C32.0736 15.4589 32.9756 16.8735 32.9756 18.4292V58.6799C32.9756 61.5743 29.9966 63.5105 27.3515 62.3353L3.37601 51.683C1.93126 51.0411 1.00013 49.6085 1.00013 48.0276V7.27309C1.00013 4.34854 4.03609 2.41268 6.68764 3.64648Z",
   fill: color
 }));
 var Ethos_default = Ethos;
 
 // src/components/svg/Google.tsx
-var import_react7 = __toModule(require("react"));
-var Google = ({width = 24}) => /* @__PURE__ */ import_react7.default.createElement("svg", {
+var import_react8 = __toModule(require("react"));
+var Google = ({width = 24}) => /* @__PURE__ */ import_react8.default.createElement("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 24 24",
   width,
   height: width
-}, /* @__PURE__ */ import_react7.default.createElement("g", {
+}, /* @__PURE__ */ import_react8.default.createElement("g", {
   transform: "matrix(1, 0, 0, 1, 27.009001, -39.238998)"
-}, /* @__PURE__ */ import_react7.default.createElement("path", {
+}, /* @__PURE__ */ import_react8.default.createElement("path", {
   fill: "#4285F4",
   d: "M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"
-}), /* @__PURE__ */ import_react7.default.createElement("path", {
+}), /* @__PURE__ */ import_react8.default.createElement("path", {
   fill: "#34A853",
   d: "M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"
-}), /* @__PURE__ */ import_react7.default.createElement("path", {
+}), /* @__PURE__ */ import_react8.default.createElement("path", {
   fill: "#FBBC05",
   d: "M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z"
-}), /* @__PURE__ */ import_react7.default.createElement("path", {
+}), /* @__PURE__ */ import_react8.default.createElement("path", {
   fill: "#EA4335",
   d: "M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z"
 })));
 var Google_default = Google;
 
 // src/components/svg/Github.tsx
-var import_react8 = __toModule(require("react"));
-var Github = ({width = 24, color = "#1B1F23"}) => /* @__PURE__ */ import_react8.default.createElement("svg", {
+var import_react9 = __toModule(require("react"));
+var Github = ({width = 24, color = "#1B1F23"}) => /* @__PURE__ */ import_react9.default.createElement("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   width,
   height: width,
   viewBox: "0 0 1024 1024",
   fill: "none"
-}, /* @__PURE__ */ import_react8.default.createElement("path", {
+}, /* @__PURE__ */ import_react9.default.createElement("path", {
   fillRule: "evenodd",
   clipRule: "evenodd",
   d: "M8 0C3.58 0 0 3.58 0 8C0 11.54 2.29 14.53 5.47 15.59C5.87 15.66 6.02 15.42 6.02 15.21C6.02 15.02 6.01 14.39 6.01 13.72C4 14.09 3.48 13.23 3.32 12.78C3.23 12.55 2.84 11.84 2.5 11.65C2.22 11.5 1.82 11.13 2.49 11.12C3.12 11.11 3.57 11.7 3.72 11.94C4.44 13.15 5.59 12.81 6.05 12.6C6.12 12.08 6.33 11.73 6.56 11.53C4.78 11.33 2.92 10.64 2.92 7.58C2.92 6.71 3.23 5.99 3.74 5.43C3.66 5.23 3.38 4.41 3.82 3.31C3.82 3.31 4.49 3.1 6.02 4.13C6.66 3.95 7.34 3.86 8.02 3.86C8.7 3.86 9.38 3.95 10.02 4.13C11.55 3.09 12.22 3.31 12.22 3.31C12.66 4.41 12.38 5.23 12.3 5.43C12.81 5.99 13.12 6.7 13.12 7.58C13.12 10.65 11.25 11.33 9.47 11.53C9.76 11.78 10.01 12.26 10.01 13.01C10.01 14.08 10 14.94 10 15.21C10 15.42 10.15 15.67 10.55 15.59C13.71 14.53 16 11.53 16 8C16 3.58 12.42 0 8 0Z",
@@ -4076,41 +4131,41 @@ var Github = ({width = 24, color = "#1B1F23"}) => /* @__PURE__ */ import_react8.
 var Github_default = Github;
 
 // src/components/svg/Email.tsx
-var import_react9 = __toModule(require("react"));
-var Email = ({width = 24}) => /* @__PURE__ */ import_react9.default.createElement("svg", {
+var import_react10 = __toModule(require("react"));
+var Email = ({width = 24}) => /* @__PURE__ */ import_react10.default.createElement("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   width,
   height: width,
   viewBox: "0 0 1024 1024",
   version: "1.1"
-}, /* @__PURE__ */ import_react9.default.createElement("path", {
+}, /* @__PURE__ */ import_react10.default.createElement("path", {
   d: "M512 16C238.064 16 16 238.064 16 512s222.064 496 496 496 496-222.064 496-496S785.936 16 512 16zM307.488 346.672l409.008 0c5.184 0 10.064 1.232 14.464 3.296l-196.688 138.064c-17.104 17.12-27.696 17.12-44.8 0l-196.608-137.984C297.328 347.936 302.24 346.672 307.488 346.672zM750.816 652.192c0 18.96-15.36 34.336-34.304 34.336L307.488 686.528c-18.944 0-34.304-15.376-34.304-34.336L273.184 391.296c0-1.728 0.256-3.376 0.512-5.024l201.92 143.312c20.096 20.112 52.688 20.112 72.784 0l201.92-143.312c0.24 1.648 0.512 3.296 0.512 5.024L750.832 652.192z"
 }));
 var Email_default = Email;
 
 // src/components/svg/Sui.tsx
-var import_react10 = __toModule(require("react"));
-var Sui = ({width = 24, color = "#6EBCEE"}) => /* @__PURE__ */ import_react10.default.createElement("svg", {
+var import_react11 = __toModule(require("react"));
+var Sui = ({width = 24, color = "#6EBCEE"}) => /* @__PURE__ */ import_react11.default.createElement("svg", {
   id: "SuiSvg",
   xmlns: "http://www.w3.org/2000/svg",
   width,
   height: width * (40 / 28),
   viewBox: "-1 0 28 40"
-}, /* @__PURE__ */ import_react10.default.createElement("path", {
+}, /* @__PURE__ */ import_react11.default.createElement("path", {
   d: "M1.8611,33.0541a13.6477,13.6477,0,0,0,23.7778,0,13.89,13.89,0,0,0,0-13.8909L15.1824.8368a1.6444,1.6444,0,0,0-2.8648,0L1.8611,19.1632A13.89,13.89,0,0,0,1.8611,33.0541ZM10.8044,9.5555,13.0338,5.648a.8222.8222,0,0,1,1.4324,0L23.043,20.68a10.8426,10.8426,0,0,1,.8873,8.8828,9.4254,9.4254,0,0,0-.4388-1.4586c-1.1847-3.0254-3.8634-5.36-7.9633-6.9393-2.8187-1.0819-4.618-2.6731-5.3491-4.73C9.2375,13.7848,10.221,10.8942,10.8044,9.5555ZM7.0028,16.2184,4.457,20.68a10.8569,10.8569,0,0,0,0,10.8582,10.6776,10.6776,0,0,0,16.1566,2.935,7.5061,7.5061,0,0,0,.0667-5.2913c-.87-2.1858-2.9646-3.9308-6.2252-5.1876-3.6857-1.4147-6.08-3.6233-7.1157-6.5625A9.297,9.297,0,0,1,7.0028,16.2184Z",
   style: {fill: color, fillRule: "evenodd"}
 }));
 var Sui_default = Sui;
 
 // src/components/svg/FallbackLogo.tsx
-var import_react11 = __toModule(require("react"));
-var FallbackLogo = ({width = 24}) => /* @__PURE__ */ import_react11.default.createElement("svg", {
+var import_react12 = __toModule(require("react"));
+var FallbackLogo = ({width = 24}) => /* @__PURE__ */ import_react12.default.createElement("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   width,
   height: width,
   viewBox: "0 0 20 20",
   fill: "currentColor"
-}, /* @__PURE__ */ import_react11.default.createElement("path", {
+}, /* @__PURE__ */ import_react12.default.createElement("path", {
   fillRule: "evenodd",
   d: "M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z",
   clipRule: "evenodd"
@@ -4118,8 +4173,8 @@ var FallbackLogo = ({width = 24}) => /* @__PURE__ */ import_react11.default.crea
 var FallbackLogo_default = FallbackLogo;
 
 // src/components/svg/CheckMark.tsx
-var import_react12 = __toModule(require("react"));
-var CheckMark = ({width = 24, color = "#1e293b"}) => /* @__PURE__ */ import_react12.default.createElement("svg", {
+var import_react13 = __toModule(require("react"));
+var CheckMark = ({width = 24, color = "#1e293b"}) => /* @__PURE__ */ import_react13.default.createElement("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   width,
   height: width * 65 / 47,
@@ -4127,7 +4182,7 @@ var CheckMark = ({width = 24, color = "#1e293b"}) => /* @__PURE__ */ import_reac
   viewBox: "0 0 24 24",
   stroke: color,
   strokeWidth: 2
-}, /* @__PURE__ */ import_react12.default.createElement("path", {
+}, /* @__PURE__ */ import_react13.default.createElement("path", {
   strokeLinecap: "round",
   strokeLinejoin: "round",
   d: "M5 13l4 4L19 7"
@@ -4135,7 +4190,7 @@ var CheckMark = ({width = 24, color = "#1e293b"}) => /* @__PURE__ */ import_reac
 var CheckMark_default = CheckMark;
 
 // src/hooks/useWindowDimensions.ts
-var import_react13 = __toModule(require("react"));
+var import_react14 = __toModule(require("react"));
 function getWindowDimensions() {
   const {innerWidth: width, innerHeight: height} = window;
   return {
@@ -4144,8 +4199,8 @@ function getWindowDimensions() {
   };
 }
 function useWindowDimensions() {
-  const [windowDimensions, setWindowDimensions] = (0, import_react13.useState)(getWindowDimensions());
-  (0, import_react13.useEffect)(() => {
+  const [windowDimensions, setWindowDimensions] = (0, import_react14.useState)(getWindowDimensions());
+  (0, import_react14.useEffect)(() => {
     function handleResize() {
       setWindowDimensions(getWindowDimensions());
     }
@@ -4166,7 +4221,7 @@ var Breakpoints;
 })(Breakpoints || (Breakpoints = {}));
 
 // src/lib/connectSui.ts
-var import_store27 = __toModule(require_store2());
+var import_store28 = __toModule(require_store2());
 var connectSui = async () => {
   if (typeof window === "undefined")
     return;
@@ -4183,7 +4238,7 @@ var connectSui = async () => {
       const accounts = await suiWallet.getAccounts();
       if (!accounts || accounts.length === 0)
         return false;
-      const suiStore = import_store27.default.namespace("sui");
+      const suiStore = import_store28.default.namespace("sui");
       const storeResult = suiStore("account", accounts[0]);
       const success = window.dispatchEvent(new Event("ethos-storage-changed"));
       log_default("connectSui", "Dispatch event-storage-changed", storeResult, success);
@@ -4198,7 +4253,7 @@ var connectSui_default = connectSui;
 
 // src/lib/event.ts
 var event = async (eventProps) => {
-  postMessage_default({
+  postIFrameMessage_default({
     action: "event",
     data: eventProps
   });
@@ -4206,7 +4261,7 @@ var event = async (eventProps) => {
 var event_default = event;
 
 // node_modules/react-google-recaptcha/lib/esm/recaptcha.js
-var import_react14 = __toModule(require("react"));
+var import_react15 = __toModule(require("react"));
 var import_prop_types = __toModule(require_prop_types());
 function _extends() {
   _extends = Object.assign || function(target) {
@@ -4370,12 +4425,12 @@ var ReCAPTCHA = /* @__PURE__ */ function(_React$Component) {
   };
   _proto.render = function render() {
     var _this$props = this.props, sitekey = _this$props.sitekey, onChange2 = _this$props.onChange, theme = _this$props.theme, type = _this$props.type, tabindex = _this$props.tabindex, onExpired = _this$props.onExpired, onErrored = _this$props.onErrored, size = _this$props.size, stoken = _this$props.stoken, grecaptcha = _this$props.grecaptcha, badge = _this$props.badge, hl = _this$props.hl, childProps = _objectWithoutPropertiesLoose(_this$props, ["sitekey", "onChange", "theme", "type", "tabindex", "onExpired", "onErrored", "size", "stoken", "grecaptcha", "badge", "hl"]);
-    return import_react14.default.createElement("div", _extends({}, childProps, {
+    return import_react15.default.createElement("div", _extends({}, childProps, {
       ref: this.handleRecaptchaRef
     }));
   };
   return ReCAPTCHA2;
-}(import_react14.default.Component);
+}(import_react15.default.Component);
 ReCAPTCHA.displayName = "ReCAPTCHA";
 ReCAPTCHA.propTypes = {
   sitekey: import_prop_types.default.string.isRequired,
@@ -4402,7 +4457,7 @@ ReCAPTCHA.defaultProps = {
 };
 
 // node_modules/react-async-script/lib/esm/async-script-loader.js
-var import_react15 = __toModule(require("react"));
+var import_react16 = __toModule(require("react"));
 var import_prop_types2 = __toModule(require_prop_types());
 var import_hoist_non_react_statics = __toModule(require_hoist_non_react_statics_cjs());
 function _extends2() {
@@ -4587,12 +4642,12 @@ function makeAsyncScript(getScriptURL, options) {
           childProps[globalName2] = typeof window[globalName2] !== "undefined" ? window[globalName2] : void 0;
         }
         childProps.ref = forwardedRef;
-        return (0, import_react15.createElement)(WrappedComponent, childProps);
+        return (0, import_react16.createElement)(WrappedComponent, childProps);
       };
       return AsyncScriptLoader2;
-    }(import_react15.Component);
-    var ForwardedComponent = (0, import_react15.forwardRef)(function(props, ref) {
-      return (0, import_react15.createElement)(AsyncScriptLoader, _extends2({}, props, {
+    }(import_react16.Component);
+    var ForwardedComponent = (0, import_react16.forwardRef)(function(props, ref) {
+      return (0, import_react16.createElement)(AsyncScriptLoader, _extends2({}, props, {
         forwardedRef: ref
       }));
     });
@@ -4661,7 +4716,7 @@ var getMobileConnectionUrl = async () => {
       }
     };
     window.addEventListener("message", connectionEventListener);
-    postMessage_default({
+    postIFrameMessage_default({
       action: "connect"
     });
   });
@@ -4670,15 +4725,15 @@ var getMobileConnetionUrl_default = getMobileConnectionUrl;
 
 // src/components/styled/SignInModal.tsx
 var SignInModal = ({isOpen, onClose, socialLogin = []}) => {
-  const [showMissingMessage, setShowMissingMessage] = (0, import_react16.useState)(false);
-  const [signingIn, setSigningIn] = (0, import_react16.useState)(false);
-  const [email, setEmail] = (0, import_react16.useState)("");
-  const [emailSent, setEmailSent] = (0, import_react16.useState)(false);
+  const [showMissingMessage, setShowMissingMessage] = (0, import_react17.useState)(false);
+  const [signingIn, setSigningIn] = (0, import_react17.useState)(false);
+  const [email, setEmail] = (0, import_react17.useState)("");
+  const [emailSent, setEmailSent] = (0, import_react17.useState)(false);
   const {width} = useWindowDimensions();
   const {appId, walletAppUrl} = getConfiguration_default();
-  const captchaRef = (0, import_react16.useRef)(null);
-  const [qrCodeUrl, setQrCodeUrl] = (0, import_react16.useState)(null);
-  const [walletOption, setWalletOption] = (0, import_react16.useState)("email");
+  const captchaRef = (0, import_react17.useRef)(null);
+  const [qrCodeUrl, setQrCodeUrl] = (0, import_react17.useState)(null);
+  const [walletOption, setWalletOption] = (0, import_react17.useState)("email");
   const onSubmit = async () => {
     setSigningIn(true);
     if (captchaRef && captchaRef.current && false) {
@@ -4735,136 +4790,136 @@ var SignInModal = ({isOpen, onClose, socialLogin = []}) => {
   const logo = (connectorId) => {
     switch (connectorId) {
       case "ethos":
-        return /* @__PURE__ */ import_react16.default.createElement(Ethos_default, {
+        return /* @__PURE__ */ import_react17.default.createElement(Ethos_default, {
           width: 17
         });
       case "sui":
-        return /* @__PURE__ */ import_react16.default.createElement(Sui_default, {
+        return /* @__PURE__ */ import_react17.default.createElement(Sui_default, {
           width: 15
         });
       case "email":
-        return /* @__PURE__ */ import_react16.default.createElement(Email_default, {
+        return /* @__PURE__ */ import_react17.default.createElement(Email_default, {
           width: 21
         });
       default:
-        return /* @__PURE__ */ import_react16.default.createElement(FallbackLogo_default, {
+        return /* @__PURE__ */ import_react17.default.createElement(FallbackLogo_default, {
           width: 17
         });
     }
   };
-  return /* @__PURE__ */ import_react16.default.createElement(import_react16.default.Fragment, null, /* @__PURE__ */ import_react16.default.createElement("div", {
+  return /* @__PURE__ */ import_react17.default.createElement(import_react17.default.Fragment, null, /* @__PURE__ */ import_react17.default.createElement("div", {
     style: dialogStyle(isOpen),
     role: "dialog"
-  }, /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, /* @__PURE__ */ import_react17.default.createElement("div", {
     style: backdropStyle(),
     onClick: () => console.log("clicked")
-  }), /* @__PURE__ */ import_react16.default.createElement(esm_default, {
+  }), /* @__PURE__ */ import_react17.default.createElement(esm_default, {
     sitekey: captchaSiteKey,
     ref: captchaRef,
     size: "invisible",
     onChange: sendEmail
-  }), /* @__PURE__ */ import_react16.default.createElement("div", {
+  }), /* @__PURE__ */ import_react17.default.createElement("div", {
     style: modalOuterWrapperStyle()
-  }, /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, /* @__PURE__ */ import_react17.default.createElement("div", {
     style: modalInnerWrapperStyle(width)
-  }, /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, /* @__PURE__ */ import_react17.default.createElement("div", {
     style: dialogPanelStyle(width, emailSent)
-  }, emailSent ? /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, emailSent ? /* @__PURE__ */ import_react17.default.createElement("div", {
     style: {textAlign: "center", margin: "24px"}
-  }, /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, /* @__PURE__ */ import_react17.default.createElement("div", {
     style: checkMarkCircleStyle()
-  }, /* @__PURE__ */ import_react16.default.createElement(CheckMark_default, {
+  }, /* @__PURE__ */ import_react17.default.createElement(CheckMark_default, {
     color: "#16a34a"
-  })), /* @__PURE__ */ import_react16.default.createElement("br", null), /* @__PURE__ */ import_react16.default.createElement("h3", {
+  })), /* @__PURE__ */ import_react17.default.createElement("br", null), /* @__PURE__ */ import_react17.default.createElement("h3", {
     style: registrationHeaderStyle()
-  }, "Check your email"), /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, "Check your email"), /* @__PURE__ */ import_react17.default.createElement("div", {
     style: secondaryTextStyle()
-  }, /* @__PURE__ */ import_react16.default.createElement("p", {
+  }, /* @__PURE__ */ import_react17.default.createElement("p", {
     style: {padding: "12px"}
-  }, "An email has been sent to you with a link to login."), /* @__PURE__ */ import_react16.default.createElement("p", null, "If you don't receive it, please check your spam folder or contact us at:"), /* @__PURE__ */ import_react16.default.createElement("p", {
+  }, "An email has been sent to you with a link to login."), /* @__PURE__ */ import_react17.default.createElement("p", null, "If you don't receive it, please check your spam folder or contact us at:"), /* @__PURE__ */ import_react17.default.createElement("p", {
     style: {justifyContent: "center", paddingTop: "12px"}
-  }, "support@ethoswallet.xyz"))) : /* @__PURE__ */ import_react16.default.createElement(import_react16.default.Fragment, null, /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, "support@ethoswallet.xyz"))) : /* @__PURE__ */ import_react17.default.createElement(import_react17.default.Fragment, null, /* @__PURE__ */ import_react17.default.createElement("div", {
     style: headerStyle()
-  }, /* @__PURE__ */ import_react16.default.createElement("h3", {
+  }, /* @__PURE__ */ import_react17.default.createElement("h3", {
     style: titleStyle()
-  }, "Sign Up or Log In"), /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, "Sign Up or Log In"), /* @__PURE__ */ import_react17.default.createElement("div", {
     style: closeStyle(),
     onClick: onClose
-  }, "\u2715")), /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, "\u2715")), /* @__PURE__ */ import_react17.default.createElement("div", {
     style: mainContentStyle(width)
-  }, /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, /* @__PURE__ */ import_react17.default.createElement("div", {
     style: walletOptionsStyle(width)
-  }, /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, /* @__PURE__ */ import_react17.default.createElement("div", {
     style: walletOptionStyle(walletOption === "email"),
     onClick: connectEmail
-  }, /* @__PURE__ */ import_react16.default.createElement("button", {
+  }, /* @__PURE__ */ import_react17.default.createElement("button", {
     style: walletOptionButtonStyle()
-  }, logo("email"), "Email or Social Login")), /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, logo("email"), "Email or Social Login")), /* @__PURE__ */ import_react17.default.createElement("div", {
     style: walletOptionStyle(walletOption === "ethos"),
     onClick: connectEthos
-  }, /* @__PURE__ */ import_react16.default.createElement("button", {
+  }, /* @__PURE__ */ import_react17.default.createElement("button", {
     style: walletOptionButtonStyle()
-  }, logo("ethos"), "Ethos Wallet")), /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, logo("ethos"), "Ethos Wallet")), /* @__PURE__ */ import_react17.default.createElement("div", {
     style: walletOptionStyle(walletOption === "ethosMobile"),
     onClick: connectEthosMobile
-  }, /* @__PURE__ */ import_react16.default.createElement("button", {
+  }, /* @__PURE__ */ import_react17.default.createElement("button", {
     style: walletOptionButtonStyle()
-  }, logo("ethos"), "Ethos Wallet Mobile")), /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, logo("ethos"), "Ethos Wallet Mobile")), /* @__PURE__ */ import_react17.default.createElement("div", {
     style: walletOptionStyle(walletOption === "sui"),
     onClick: _connectSui
-  }, /* @__PURE__ */ import_react16.default.createElement("button", {
+  }, /* @__PURE__ */ import_react17.default.createElement("button", {
     style: walletOptionButtonStyle()
-  }, logo("sui"), "Sui Test Wallet")), showMissingMessage && /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, logo("sui"), "Sui Test Wallet")), showMissingMessage && /* @__PURE__ */ import_react17.default.createElement("div", {
     style: connectorWarning()
-  }, "You do not have the necessary wallet extension installed.")), /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, "You do not have the necessary wallet extension installed.")), /* @__PURE__ */ import_react17.default.createElement("div", {
     style: registrationStyle(width)
-  }, qrCodeUrl ? /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, qrCodeUrl ? /* @__PURE__ */ import_react17.default.createElement("div", {
     style: qrCodeStyle()
-  }, /* @__PURE__ */ import_react16.default.createElement("h3", {
+  }, /* @__PURE__ */ import_react17.default.createElement("h3", {
     style: centeredRegistrationHeaderStyle()
-  }, "Connect Mobile Wallet"), /* @__PURE__ */ import_react16.default.createElement("p", {
+  }, "Connect Mobile Wallet"), /* @__PURE__ */ import_react17.default.createElement("p", {
     style: subheaderStyle()
-  }, "Scan the QR code with a mobile device."), /* @__PURE__ */ import_react16.default.createElement("div", null, /* @__PURE__ */ import_react16.default.createElement("img", {
+  }, "Scan the QR code with a mobile device."), /* @__PURE__ */ import_react17.default.createElement("div", null, /* @__PURE__ */ import_react17.default.createElement("img", {
     src: qrCodeUrl
-  }))) : /* @__PURE__ */ import_react16.default.createElement(import_react16.default.Fragment, null, (socialLogin || []).length > 0 && /* @__PURE__ */ import_react16.default.createElement("div", null, /* @__PURE__ */ import_react16.default.createElement("h3", {
+  }))) : /* @__PURE__ */ import_react17.default.createElement(import_react17.default.Fragment, null, (socialLogin || []).length > 0 && /* @__PURE__ */ import_react17.default.createElement("div", null, /* @__PURE__ */ import_react17.default.createElement("h3", {
     style: registrationHeaderStyle()
-  }, "Sign up or log in with:"), /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, "Sign up or log in with:"), /* @__PURE__ */ import_react17.default.createElement("div", {
     style: socialLoginButtonsStyle()
-  }, socialLogin.indexOf("google") > -1 && /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, socialLogin.indexOf("google") > -1 && /* @__PURE__ */ import_react17.default.createElement("div", {
     style: socialLoginButtonStyle(),
     onClick: () => loginWithSocial("google")
-  }, /* @__PURE__ */ import_react16.default.createElement(Google_default, {
+  }, /* @__PURE__ */ import_react17.default.createElement(Google_default, {
     width: 36
-  })), socialLogin.indexOf("github") > -1 && /* @__PURE__ */ import_react16.default.createElement("div", {
+  })), socialLogin.indexOf("github") > -1 && /* @__PURE__ */ import_react17.default.createElement("div", {
     style: socialLoginButtonStyle(),
     onClick: () => loginWithSocial("github")
-  }, /* @__PURE__ */ import_react16.default.createElement(Github_default, {
+  }, /* @__PURE__ */ import_react17.default.createElement(Github_default, {
     width: 36
-  })))), /* @__PURE__ */ import_react16.default.createElement("h3", {
+  })))), /* @__PURE__ */ import_react17.default.createElement("h3", {
     style: registrationHeaderStyle()
-  }, "Sign up or log in with a link"), signingIn ? /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, "Sign up or log in with a link"), signingIn ? /* @__PURE__ */ import_react17.default.createElement("div", {
     style: loaderStyle()
-  }, /* @__PURE__ */ import_react16.default.createElement(Loader_default, {
+  }, /* @__PURE__ */ import_react17.default.createElement(Loader_default, {
     width: 50
-  })) : /* @__PURE__ */ import_react16.default.createElement(import_react16.default.Fragment, null, /* @__PURE__ */ import_react16.default.createElement("form", {
+  })) : /* @__PURE__ */ import_react17.default.createElement(import_react17.default.Fragment, null, /* @__PURE__ */ import_react17.default.createElement("form", {
     onSubmit
-  }, /* @__PURE__ */ import_react16.default.createElement("input", {
+  }, /* @__PURE__ */ import_react17.default.createElement("input", {
     style: inputStyle(),
     type: "email",
     placeholder: "Email address",
     value: email,
     onChange: (e) => setEmail(e.target.value)
-  }), /* @__PURE__ */ import_react16.default.createElement("button", {
+  }), /* @__PURE__ */ import_react17.default.createElement("button", {
     style: buttonStyle(width),
     type: "submit"
-  }, "Send")), /* @__PURE__ */ import_react16.default.createElement("div", {
+  }, "Send")), /* @__PURE__ */ import_react17.default.createElement("div", {
     style: selfCustodialSection()
-  }, "Advanced:\xA0", /* @__PURE__ */ import_react16.default.createElement("a", {
+  }, "Advanced:\xA0", /* @__PURE__ */ import_react17.default.createElement("a", {
     href: `${walletAppUrl}/extensions`,
     style: selfCustodialLink(),
     target: "_blank",
     rel: "noopener noreferrer"
-  }, "Chrome Extension"), "\xA0or\xA0", /* @__PURE__ */ import_react16.default.createElement("a", {
+  }, "Chrome Extension"), "\xA0or\xA0", /* @__PURE__ */ import_react17.default.createElement("a", {
     href: `${walletAppUrl}/mobile`,
     style: selfCustodialLink(),
     target: "_blank",
@@ -5089,7 +5144,7 @@ var SignInModal_default = SignInModal;
 // src/components/styled/SignInButton.tsx
 var SignInButton = (props) => {
   const {children, socialLogin, onClick, ...reactProps} = props;
-  const [isOpen, setIsOpen] = import_react17.default.useState(false);
+  const [isOpen, setIsOpen] = import_react18.default.useState(false);
   const _onClick = (e) => {
     var _a;
     setIsOpen(true);
@@ -5101,24 +5156,24 @@ var SignInButton = (props) => {
     (_a = document.getElementsByTagName("html").item(0)) == null ? void 0 : _a.setAttribute("style", "");
     setIsOpen(false);
   };
-  return /* @__PURE__ */ import_react17.default.createElement(import_react17.default.Fragment, null, /* @__PURE__ */ import_react17.default.createElement(SignInModal_default, {
+  return /* @__PURE__ */ import_react18.default.createElement(import_react18.default.Fragment, null, /* @__PURE__ */ import_react18.default.createElement(SignInModal_default, {
     socialLogin,
     isOpen,
     onClose
-  }), /* @__PURE__ */ import_react17.default.createElement(Button_default, {
+  }), /* @__PURE__ */ import_react18.default.createElement(Button_default, {
     onClick: _onClick,
     ...reactProps
-  }, children || /* @__PURE__ */ import_react17.default.createElement(import_react17.default.Fragment, null, "Sign In")));
+  }, children || /* @__PURE__ */ import_react18.default.createElement(import_react18.default.Fragment, null, "Sign In")));
 };
 var SignInButton_default = SignInButton;
 
 // src/lib/logout.ts
-var import_store28 = __toModule(require_store2());
+var import_store29 = __toModule(require_store2());
 var logout = async (wallet = false) => {
   const {walletAppUrl} = getConfiguration_default();
-  import_store28.default.namespace("auth")("access_token", null);
+  import_store29.default.namespace("auth")("access_token", null);
   return new Promise((resolve) => {
-    window.addEventListener("message", (message) => {
+    const listener = (message) => {
       log_default("logout", "Message origin: ", message.origin, walletAppUrl, message);
       if (message.origin === walletAppUrl) {
         const {action, data} = message.data;
@@ -5127,8 +5182,10 @@ var logout = async (wallet = false) => {
           resolve(data == null ? void 0 : data.user);
         }
       }
-    });
-    postMessage_default({
+    };
+    window.removeEventListener("message", listener);
+    window.addEventListener("message", listener);
+    postIFrameMessage_default({
       action: "logout",
       data: {wallet}
     });
@@ -5156,7 +5213,7 @@ var sign = async ({signData, onComplete}) => {
     }
   };
   window.addEventListener("message", signEventListener);
-  postMessage_default({
+  postIFrameMessage_default({
     action: "sign",
     data: {signData}
   });
@@ -5238,7 +5295,7 @@ var transact = async ({
   };
   window.addEventListener("message", transactionEventListener);
   console.log("POST TRANSACTION", details);
-  postMessage_default({
+  postIFrameMessage_default({
     action: "transact",
     data: {details}
   });
@@ -5365,7 +5422,7 @@ var dripSui = async ({address}) => {
       }
     };
     window.addEventListener("message", dripEventListener);
-    postMessage_default({
+    postIFrameMessage_default({
       action: "drip",
       data: {address}
     });
@@ -5374,9 +5431,9 @@ var dripSui = async ({address}) => {
 var dripSui_default = dripSui;
 
 // src/hooks/useProviderAndSigner.ts
-var import_react18 = __toModule(require("react"));
+var import_react19 = __toModule(require("react"));
 var useProviderAndSigner = () => {
-  const providerAndSigner = (0, import_react18.useContext)(ProviderAndSignerContext_default);
+  const providerAndSigner = (0, import_react19.useContext)(ProviderAndSignerContext_default);
   return providerAndSigner;
 };
 var useProviderAndSigner_default = useProviderAndSigner;
@@ -5417,14 +5474,14 @@ object-assign
  */
 
 },{"react":12}],3:[function(require,module,exports){
-var uo=Object.create,xe=Object.defineProperty;var fo=Object.getOwnPropertyDescriptor;var po=Object.getOwnPropertyNames;var go=Object.getPrototypeOf,ho=Object.prototype.hasOwnProperty;var Yt=t=>xe(t,"__esModule",{value:!0});var g=(t,e)=>()=>(e||t((e={exports:{}}).exports,e),e.exports),mo=(t,e)=>{for(var r in e)xe(t,r,{get:e[r],enumerable:!0})},yo=(t,e,r)=>{if(e&&typeof e=="object"||typeof e=="function")for(let o of po(e))!ho.call(t,o)&&o!=="default"&&xe(t,o,{get:()=>e[o],enumerable:!(r=fo(e,o))||r.enumerable});return t},y=t=>yo(Yt(xe(t!=null?uo(go(t)):{},"default",t&&t.__esModule&&"default"in t?{get:()=>t.default,enumerable:!0}:{value:t,enumerable:!0})),t);var z=g((Ee,Pe)=>{(function(t,e){var r={version:"2.13.2",areas:{},apis:{},inherit:function(n,i){for(var s in n)i.hasOwnProperty(s)||Object.defineProperty(i,s,Object.getOwnPropertyDescriptor(n,s));return i},stringify:function(n,i){return n===void 0||typeof n=="function"?n+"":JSON.stringify(n,i||r.replace)},parse:function(n,i){try{return JSON.parse(n,i||r.revive)}catch(s){return n}},fn:function(n,i){r.storeAPI[n]=i;for(var s in r.apis)r.apis[s][n]=i},get:function(n,i){return n.getItem(i)},set:function(n,i,s){n.setItem(i,s)},remove:function(n,i){n.removeItem(i)},key:function(n,i){return n.key(i)},length:function(n){return n.length},clear:function(n){n.clear()},Store:function(n,i,s){var a=r.inherit(r.storeAPI,function(l,u,p){return arguments.length===0?a.getAll():typeof u=="function"?a.transact(l,u,p):u!==void 0?a.set(l,u,p):typeof l=="string"||typeof l=="number"?a.get(l):typeof l=="function"?a.each(l):l?a.setAll(l,u):a.clear()});a._id=n;try{var c="__store2_test";i.setItem(c,"ok"),a._area=i,i.removeItem(c)}catch(l){a._area=r.storage("fake")}return a._ns=s||"",r.areas[n]||(r.areas[n]=a._area),r.apis[a._ns+a._id]||(r.apis[a._ns+a._id]=a),a},storeAPI:{area:function(n,i){var s=this[n];return(!s||!s.area)&&(s=r.Store(n,i,this._ns),this[n]||(this[n]=s)),s},namespace:function(n,i){if(!n)return this._ns?this._ns.substring(0,this._ns.length-1):"";var s=n,a=this[s];if((!a||!a.namespace)&&(a=r.Store(this._id,this._area,this._ns+s+"."),this[s]||(this[s]=a),!i))for(var c in r.areas)a.area(c,r.areas[c]);return a},isFake:function(n){return n?(this._real=this._area,this._area=r.storage("fake")):n===!1&&(this._area=this._real||this._area),this._area.name==="fake"},toString:function(){return"store"+(this._ns?"."+this.namespace():"")+"["+this._id+"]"},has:function(n){return this._area.has?this._area.has(this._in(n)):this._in(n)in this._area},size:function(){return this.keys().length},each:function(n,i){for(var s=0,a=r.length(this._area);s<a;s++){var c=this._out(r.key(this._area,s));if(c!==void 0&&n.call(this,c,this.get(c),i)===!1)break;a>r.length(this._area)&&(a--,s--)}return i||this},keys:function(n){return this.each(function(i,s,a){a.push(i)},n||[])},get:function(n,i){var s=r.get(this._area,this._in(n)),a;return typeof i=="function"&&(a=i,i=null),s!==null?r.parse(s,a):i!=null?i:s},getAll:function(n){return this.each(function(i,s,a){a[i]=s},n||{})},transact:function(n,i,s){var a=this.get(n,s),c=i(a);return this.set(n,c===void 0?a:c),this},set:function(n,i,s){var a=this.get(n),c;return a!=null&&s===!1?i:(typeof s!="boolean"&&(c=s),r.set(this._area,this._in(n),r.stringify(i,c))||a)},setAll:function(n,i){var s,a;for(var c in n)a=n[c],this.set(c,a,i)!==a&&(s=!0);return s},add:function(n,i,s){var a=this.get(n);if(a instanceof Array)i=a.concat(i);else if(a!==null){var c=typeof a;if(c===typeof i&&c==="object"){for(var l in i)a[l]=i[l];i=a}else i=a+i}return r.set(this._area,this._in(n),r.stringify(i,s)),i},remove:function(n,i){var s=this.get(n,i);return r.remove(this._area,this._in(n)),s},clear:function(){return this._ns?this.each(function(n){r.remove(this._area,this._in(n))},1):r.clear(this._area),this},clearAll:function(){var n=this._area;for(var i in r.areas)r.areas.hasOwnProperty(i)&&(this._area=r.areas[i],this.clear());return this._area=n,this},_in:function(n){return typeof n!="string"&&(n=r.stringify(n)),this._ns?this._ns+n:n},_out:function(n){return this._ns?n&&n.indexOf(this._ns)===0?n.substring(this._ns.length):void 0:n}},storage:function(n){return r.inherit(r.storageAPI,{items:{},name:n})},storageAPI:{length:0,has:function(n){return this.items.hasOwnProperty(n)},key:function(n){var i=0;for(var s in this.items)if(this.has(s)&&n===i++)return s},setItem:function(n,i){this.has(n)||this.length++,this.items[n]=i},removeItem:function(n){this.has(n)&&(delete this.items[n],this.length--)},getItem:function(n){return this.has(n)?this.items[n]:null},clear:function(){for(var n in this.items)this.removeItem(n)}}},o=r.Store("local",function(){try{return localStorage}catch(n){}}());o.local=o,o._=r,o.area("session",function(){try{return sessionStorage}catch(n){}}()),o.area("page",r.storage("page")),typeof e=="function"&&e.amd!==void 0?e("store2",[],function(){return o}):typeof Pe!="undefined"&&Pe.exports?Pe.exports=o:(t.store&&(r.conflict=t.store),t.store=o)})(Ee,Ee&&Ee.define)});var mr=g((Va,hr)=>{"use strict";var $o="SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";hr.exports=$o});var Sr=g((Ka,vr)=>{"use strict";var Vo=mr();function yr(){}function wr(){}wr.resetWarningCache=yr;vr.exports=function(){function t(o,n,i,s,a,c){if(c!==Vo){var l=new Error("Calling PropTypes validators directly is not supported by the `prop-types` package. Use PropTypes.checkPropTypes() to call them. Read more at http://fb.me/use-check-prop-types");throw l.name="Invariant Violation",l}}t.isRequired=t;function e(){return t}var r={array:t,bigint:t,bool:t,func:t,number:t,object:t,string:t,symbol:t,any:t,arrayOf:e,element:t,elementType:t,instanceOf:e,node:t,objectOf:e,oneOf:e,oneOfType:e,shape:e,exact:e,checkPropTypes:wr,resetWarningCache:yr};return r.PropTypes=r,r}});var mt=g((Ga,Cr)=>{Cr.exports=Sr()();var Ja,Ya});var xr=g(S=>{"use strict";var A=typeof Symbol=="function"&&Symbol.for,wt=A?Symbol.for("react.element"):60103,vt=A?Symbol.for("react.portal"):60106,Fe=A?Symbol.for("react.fragment"):60107,De=A?Symbol.for("react.strict_mode"):60108,We=A?Symbol.for("react.profiler"):60114,je=A?Symbol.for("react.provider"):60109,qe=A?Symbol.for("react.context"):60110,St=A?Symbol.for("react.async_mode"):60111,ze=A?Symbol.for("react.concurrent_mode"):60111,He=A?Symbol.for("react.forward_ref"):60112,$e=A?Symbol.for("react.suspense"):60113,Yo=A?Symbol.for("react.suspense_list"):60120,Ve=A?Symbol.for("react.memo"):60115,Ke=A?Symbol.for("react.lazy"):60116,Go=A?Symbol.for("react.block"):60121,Qo=A?Symbol.for("react.fundamental"):60117,Zo=A?Symbol.for("react.responder"):60118,Xo=A?Symbol.for("react.scope"):60119;function k(t){if(typeof t=="object"&&t!==null){var e=t.$$typeof;switch(e){case wt:switch(t=t.type,t){case St:case ze:case Fe:case We:case De:case $e:return t;default:switch(t=t&&t.$$typeof,t){case qe:case He:case Ke:case Ve:case je:return t;default:return e}}case vt:return e}}}function br(t){return k(t)===ze}S.AsyncMode=St;S.ConcurrentMode=ze;S.ContextConsumer=qe;S.ContextProvider=je;S.Element=wt;S.ForwardRef=He;S.Fragment=Fe;S.Lazy=Ke;S.Memo=Ve;S.Portal=vt;S.Profiler=We;S.StrictMode=De;S.Suspense=$e;S.isAsyncMode=function(t){return br(t)||k(t)===St};S.isConcurrentMode=br;S.isContextConsumer=function(t){return k(t)===qe};S.isContextProvider=function(t){return k(t)===je};S.isElement=function(t){return typeof t=="object"&&t!==null&&t.$$typeof===wt};S.isForwardRef=function(t){return k(t)===He};S.isFragment=function(t){return k(t)===Fe};S.isLazy=function(t){return k(t)===Ke};S.isMemo=function(t){return k(t)===Ve};S.isPortal=function(t){return k(t)===vt};S.isProfiler=function(t){return k(t)===We};S.isStrictMode=function(t){return k(t)===De};S.isSuspense=function(t){return k(t)===$e};S.isValidElementType=function(t){return typeof t=="string"||typeof t=="function"||t===Fe||t===ze||t===We||t===De||t===$e||t===Yo||typeof t=="object"&&t!==null&&(t.$$typeof===Ke||t.$$typeof===Ve||t.$$typeof===je||t.$$typeof===qe||t.$$typeof===He||t.$$typeof===Qo||t.$$typeof===Zo||t.$$typeof===Xo||t.$$typeof===Go)};S.typeOf=k});var Pr=g((Xa,Er)=>{"use strict";Er.exports=xr()});var Nr=g((ec,Mr)=>{"use strict";var Ct=Pr(),ei={childContextTypes:!0,contextType:!0,contextTypes:!0,defaultProps:!0,displayName:!0,getDefaultProps:!0,getDerivedStateFromError:!0,getDerivedStateFromProps:!0,mixins:!0,propTypes:!0,type:!0},ti={name:!0,length:!0,prototype:!0,caller:!0,callee:!0,arguments:!0,arity:!0},ri={$$typeof:!0,render:!0,defaultProps:!0,displayName:!0,propTypes:!0},Ar={$$typeof:!0,compare:!0,defaultProps:!0,displayName:!0,propTypes:!0,type:!0},bt={};bt[Ct.ForwardRef]=ri;bt[Ct.Memo]=Ar;function Ir(t){return Ct.isMemo(t)?Ar:bt[t.$$typeof]||ei}var ni=Object.defineProperty,oi=Object.getOwnPropertyNames,Tr=Object.getOwnPropertySymbols,ii=Object.getOwnPropertyDescriptor,si=Object.getPrototypeOf,_r=Object.prototype;function Lr(t,e,r){if(typeof e!="string"){if(_r){var o=si(e);o&&o!==_r&&Lr(t,o,r)}var n=oi(e);Tr&&(n=n.concat(Tr(e)));for(var i=Ir(t),s=Ir(e),a=0;a<n.length;++a){var c=n[a];if(!ti[c]&&!(r&&r[c])&&!(s&&s[c])&&!(i&&i[c])){var l=ii(e,c);try{ni(t,c,l)}catch(u){}}}}return t}Mr.exports=Lr});var Wr=g((uc,Dr)=>{Dr.exports=function(){return typeof Promise=="function"&&Promise.prototype&&Promise.prototype.then}});var Y=g(ne=>{var Pt,pi=[0,26,44,70,100,134,172,196,242,292,346,404,466,532,581,655,733,815,901,991,1085,1156,1258,1364,1474,1588,1706,1828,1921,2051,2185,2323,2465,2611,2761,2876,3034,3196,3362,3532,3706];ne.getSymbolSize=function(e){if(!e)throw new Error('"version" cannot be null or undefined');if(e<1||e>40)throw new Error('"version" should be in range from 1 to 40');return e*4+17};ne.getSymbolTotalCodewords=function(e){return pi[e]};ne.getBCHDigit=function(t){let e=0;for(;t!==0;)e++,t>>>=1;return e};ne.setToSJISFunction=function(e){if(typeof e!="function")throw new Error('"toSJISFunc" is not a valid function.');Pt=e};ne.isKanjiModeEnabled=function(){return typeof Pt!="undefined"};ne.toSJIS=function(e){return Pt(e)}});var Je=g(F=>{F.L={bit:1};F.M={bit:0};F.Q={bit:3};F.H={bit:2};function gi(t){if(typeof t!="string")throw new Error("Param is not a string");switch(t.toLowerCase()){case"l":case"low":return F.L;case"m":case"medium":return F.M;case"q":case"quartile":return F.Q;case"h":case"high":return F.H;default:throw new Error("Unknown EC Level: "+t)}}F.isValid=function(e){return e&&typeof e.bit!="undefined"&&e.bit>=0&&e.bit<4};F.from=function(e,r){if(F.isValid(e))return e;try{return gi(e)}catch(o){return r}}});var zr=g((pc,qr)=>{function jr(){this.buffer=[],this.length=0}jr.prototype={get:function(t){let e=Math.floor(t/8);return(this.buffer[e]>>>7-t%8&1)==1},put:function(t,e){for(let r=0;r<e;r++)this.putBit((t>>>e-r-1&1)==1)},getLengthInBits:function(){return this.length},putBit:function(t){let e=Math.floor(this.length/8);this.buffer.length<=e&&this.buffer.push(0),t&&(this.buffer[e]|=128>>>this.length%8),this.length++}};qr.exports=jr});var $r=g((gc,Hr)=>{function he(t){if(!t||t<1)throw new Error("BitMatrix size must be defined and greater than 0");this.size=t,this.data=new Uint8Array(t*t),this.reservedBit=new Uint8Array(t*t)}he.prototype.set=function(t,e,r,o){let n=t*this.size+e;this.data[n]=r,o&&(this.reservedBit[n]=!0)};he.prototype.get=function(t,e){return this.data[t*this.size+e]};he.prototype.xor=function(t,e,r){this.data[t*this.size+e]^=r};he.prototype.isReserved=function(t,e){return this.reservedBit[t*this.size+e]};Hr.exports=he});var Vr=g(Ye=>{var hi=Y().getSymbolSize;Ye.getRowColCoords=function(e){if(e===1)return[];let r=Math.floor(e/7)+2,o=hi(e),n=o===145?26:Math.ceil((o-13)/(2*r-2))*2,i=[o-7];for(let s=1;s<r-1;s++)i[s]=i[s-1]-n;return i.push(6),i.reverse()};Ye.getPositions=function(e){let r=[],o=Ye.getRowColCoords(e),n=o.length;for(let i=0;i<n;i++)for(let s=0;s<n;s++)i===0&&s===0||i===0&&s===n-1||i===n-1&&s===0||r.push([o[i],o[s]]);return r}});var Yr=g(Jr=>{var mi=Y().getSymbolSize,Kr=7;Jr.getPositions=function(e){let r=mi(e);return[[0,0],[r-Kr,0],[0,r-Kr]]}});var Gr=g(b=>{b.Patterns={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7};var oe={N1:3,N2:3,N3:40,N4:10};b.isValid=function(e){return e!=null&&e!==""&&!isNaN(e)&&e>=0&&e<=7};b.from=function(e){return b.isValid(e)?parseInt(e,10):void 0};b.getPenaltyN1=function(e){let r=e.size,o=0,n=0,i=0,s=null,a=null;for(let c=0;c<r;c++){n=i=0,s=a=null;for(let l=0;l<r;l++){let u=e.get(c,l);u===s?n++:(n>=5&&(o+=oe.N1+(n-5)),s=u,n=1),u=e.get(l,c),u===a?i++:(i>=5&&(o+=oe.N1+(i-5)),a=u,i=1)}n>=5&&(o+=oe.N1+(n-5)),i>=5&&(o+=oe.N1+(i-5))}return o};b.getPenaltyN2=function(e){let r=e.size,o=0;for(let n=0;n<r-1;n++)for(let i=0;i<r-1;i++){let s=e.get(n,i)+e.get(n,i+1)+e.get(n+1,i)+e.get(n+1,i+1);(s===4||s===0)&&o++}return o*oe.N2};b.getPenaltyN3=function(e){let r=e.size,o=0,n=0,i=0;for(let s=0;s<r;s++){n=i=0;for(let a=0;a<r;a++)n=n<<1&2047|e.get(s,a),a>=10&&(n===1488||n===93)&&o++,i=i<<1&2047|e.get(a,s),a>=10&&(i===1488||i===93)&&o++}return o*oe.N3};b.getPenaltyN4=function(e){let r=0,o=e.data.length;for(let i=0;i<o;i++)r+=e.data[i];return Math.abs(Math.ceil(r*100/o/5)-10)*oe.N4};function yi(t,e,r){switch(t){case b.Patterns.PATTERN000:return(e+r)%2==0;case b.Patterns.PATTERN001:return e%2==0;case b.Patterns.PATTERN010:return r%3==0;case b.Patterns.PATTERN011:return(e+r)%3==0;case b.Patterns.PATTERN100:return(Math.floor(e/2)+Math.floor(r/3))%2==0;case b.Patterns.PATTERN101:return e*r%2+e*r%3==0;case b.Patterns.PATTERN110:return(e*r%2+e*r%3)%2==0;case b.Patterns.PATTERN111:return(e*r%3+(e+r)%2)%2==0;default:throw new Error("bad maskPattern:"+t)}}b.applyMask=function(e,r){let o=r.size;for(let n=0;n<o;n++)for(let i=0;i<o;i++)r.isReserved(i,n)||r.xor(i,n,yi(e,i,n))};b.getBestMask=function(e,r){let o=Object.keys(b.Patterns).length,n=0,i=Infinity;for(let s=0;s<o;s++){r(s),b.applyMask(s,e);let a=b.getPenaltyN1(e)+b.getPenaltyN2(e)+b.getPenaltyN3(e)+b.getPenaltyN4(e);b.applyMask(s,e),a<i&&(i=a,n=s)}return n}});var It=g(At=>{var G=Je(),Ge=[1,1,1,1,1,1,1,1,1,1,2,2,1,2,2,4,1,2,4,4,2,4,4,4,2,4,6,5,2,4,6,6,2,5,8,8,4,5,8,8,4,5,8,11,4,8,10,11,4,9,12,16,4,9,16,16,6,10,12,18,6,10,17,16,6,11,16,19,6,13,18,21,7,14,21,25,8,16,20,25,8,17,23,25,9,17,23,34,9,18,25,30,10,20,27,32,12,21,29,35,12,23,34,37,12,25,34,40,13,26,35,42,14,28,38,45,15,29,40,48,16,31,43,51,17,33,45,54,18,35,48,57,19,37,51,60,19,38,53,63,20,40,56,66,21,43,59,70,22,45,62,74,24,47,65,77,25,49,68,81],Qe=[7,10,13,17,10,16,22,28,15,26,36,44,20,36,52,64,26,48,72,88,36,64,96,112,40,72,108,130,48,88,132,156,60,110,160,192,72,130,192,224,80,150,224,264,96,176,260,308,104,198,288,352,120,216,320,384,132,240,360,432,144,280,408,480,168,308,448,532,180,338,504,588,196,364,546,650,224,416,600,700,224,442,644,750,252,476,690,816,270,504,750,900,300,560,810,960,312,588,870,1050,336,644,952,1110,360,700,1020,1200,390,728,1050,1260,420,784,1140,1350,450,812,1200,1440,480,868,1290,1530,510,924,1350,1620,540,980,1440,1710,570,1036,1530,1800,570,1064,1590,1890,600,1120,1680,1980,630,1204,1770,2100,660,1260,1860,2220,720,1316,1950,2310,750,1372,2040,2430];At.getBlocksCount=function(e,r){switch(r){case G.L:return Ge[(e-1)*4+0];case G.M:return Ge[(e-1)*4+1];case G.Q:return Ge[(e-1)*4+2];case G.H:return Ge[(e-1)*4+3];default:return}};At.getTotalCodewordsCount=function(e,r){switch(r){case G.L:return Qe[(e-1)*4+0];case G.M:return Qe[(e-1)*4+1];case G.Q:return Qe[(e-1)*4+2];case G.H:return Qe[(e-1)*4+3];default:return}}});var Qr=g(Xe=>{var me=new Uint8Array(512),Ze=new Uint8Array(256);(function(){let e=1;for(let r=0;r<255;r++)me[r]=e,Ze[e]=r,e<<=1,e&256&&(e^=285);for(let r=255;r<512;r++)me[r]=me[r-255]})();Xe.log=function(e){if(e<1)throw new Error("log("+e+")");return Ze[e]};Xe.exp=function(e){return me[e]};Xe.mul=function(e,r){return e===0||r===0?0:me[Ze[e]+Ze[r]]}});var Zr=g(ye=>{var Tt=Qr();ye.mul=function(e,r){let o=new Uint8Array(e.length+r.length-1);for(let n=0;n<e.length;n++)for(let i=0;i<r.length;i++)o[n+i]^=Tt.mul(e[n],r[i]);return o};ye.mod=function(e,r){let o=new Uint8Array(e);for(;o.length-r.length>=0;){let n=o[0];for(let s=0;s<r.length;s++)o[s]^=Tt.mul(r[s],n);let i=0;for(;i<o.length&&o[i]===0;)i++;o=o.slice(i)}return o};ye.generateECPolynomial=function(e){let r=new Uint8Array([1]);for(let o=0;o<e;o++)r=ye.mul(r,new Uint8Array([1,Tt.exp(o)]));return r}});var tn=g((Cc,en)=>{var Xr=Zr();function _t(t){this.genPoly=void 0,this.degree=t,this.degree&&this.initialize(this.degree)}_t.prototype.initialize=function(e){this.degree=e,this.genPoly=Xr.generateECPolynomial(this.degree)};_t.prototype.encode=function(e){if(!this.genPoly)throw new Error("Encoder not initialized");let r=new Uint8Array(e.length+this.degree);r.set(e);let o=Xr.mod(r,this.genPoly),n=this.degree-o.length;if(n>0){let i=new Uint8Array(this.degree);return i.set(o,n),i}return o};en.exports=_t});var Lt=g(rn=>{rn.isValid=function(e){return!isNaN(e)&&e>=1&&e<=40}});var Mt=g($=>{var nn="[0-9]+",wi="[A-Z $%*+\\-./:]+",we="(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+";we=we.replace(/u/g,"\\u");var vi="(?:(?![A-Z0-9 $%*+\\-./:]|"+we+`)(?:.|[\r
-]))+`;$.KANJI=new RegExp(we,"g");$.BYTE_KANJI=new RegExp("[^A-Z0-9 $%*+\\-./:]+","g");$.BYTE=new RegExp(vi,"g");$.NUMERIC=new RegExp(nn,"g");$.ALPHANUMERIC=new RegExp(wi,"g");var Si=new RegExp("^"+we+"$"),Ci=new RegExp("^"+nn+"$"),bi=new RegExp("^[A-Z0-9 $%*+\\-./:]+$");$.testKanji=function(e){return Si.test(e)};$.testNumeric=function(e){return Ci.test(e)};$.testAlphanumeric=function(e){return bi.test(e)}});var Q=g(P=>{var xi=Lt(),Nt=Mt();P.NUMERIC={id:"Numeric",bit:1<<0,ccBits:[10,12,14]};P.ALPHANUMERIC={id:"Alphanumeric",bit:1<<1,ccBits:[9,11,13]};P.BYTE={id:"Byte",bit:1<<2,ccBits:[8,16,16]};P.KANJI={id:"Kanji",bit:1<<3,ccBits:[8,10,12]};P.MIXED={bit:-1};P.getCharCountIndicator=function(e,r){if(!e.ccBits)throw new Error("Invalid mode: "+e);if(!xi.isValid(r))throw new Error("Invalid version: "+r);return r>=1&&r<10?e.ccBits[0]:r<27?e.ccBits[1]:e.ccBits[2]};P.getBestModeForData=function(e){return Nt.testNumeric(e)?P.NUMERIC:Nt.testAlphanumeric(e)?P.ALPHANUMERIC:Nt.testKanji(e)?P.KANJI:P.BYTE};P.toString=function(e){if(e&&e.id)return e.id;throw new Error("Invalid mode")};P.isValid=function(e){return e&&e.bit&&e.ccBits};function Ei(t){if(typeof t!="string")throw new Error("Param is not a string");switch(t.toLowerCase()){case"numeric":return P.NUMERIC;case"alphanumeric":return P.ALPHANUMERIC;case"kanji":return P.KANJI;case"byte":return P.BYTE;default:throw new Error("Unknown mode: "+t)}}P.from=function(e,r){if(P.isValid(e))return e;try{return Ei(e)}catch(o){return r}}});var ln=g(ie=>{var et=Y(),Pi=It(),on=Je(),Z=Q(),Bt=Lt(),sn=1<<12|1<<11|1<<10|1<<9|1<<8|1<<5|1<<2|1<<0,an=et.getBCHDigit(sn);function Ai(t,e,r){for(let o=1;o<=40;o++)if(e<=ie.getCapacity(o,r,t))return o}function cn(t,e){return Z.getCharCountIndicator(t,e)+4}function Ii(t,e){let r=0;return t.forEach(function(o){r+=cn(o.mode,e)+o.getBitsLength()}),r}function Ti(t,e){for(let r=1;r<=40;r++)if(Ii(t,r)<=ie.getCapacity(r,e,Z.MIXED))return r}ie.from=function(e,r){return Bt.isValid(e)?parseInt(e,10):r};ie.getCapacity=function(e,r,o){if(!Bt.isValid(e))throw new Error("Invalid QR Code version");typeof o=="undefined"&&(o=Z.BYTE);let n=et.getSymbolTotalCodewords(e),i=Pi.getTotalCodewordsCount(e,r),s=(n-i)*8;if(o===Z.MIXED)return s;let a=s-cn(o,e);switch(o){case Z.NUMERIC:return Math.floor(a/10*3);case Z.ALPHANUMERIC:return Math.floor(a/11*2);case Z.KANJI:return Math.floor(a/13);case Z.BYTE:default:return Math.floor(a/8)}};ie.getBestVersionForData=function(e,r){let o,n=on.from(r,on.M);if(Array.isArray(e)){if(e.length>1)return Ti(e,n);if(e.length===0)return 1;o=e[0]}else o=e;return Ai(o.mode,o.getLength(),n)};ie.getEncodedBits=function(e){if(!Bt.isValid(e)||e<7)throw new Error("Invalid QR Code version");let r=e<<12;for(;et.getBCHDigit(r)-an>=0;)r^=sn<<et.getBCHDigit(r)-an;return e<<12|r}});var pn=g(dn=>{var Rt=Y(),un=1<<10|1<<8|1<<5|1<<4|1<<2|1<<1|1<<0,_i=1<<14|1<<12|1<<10|1<<4|1<<1,fn=Rt.getBCHDigit(un);dn.getEncodedBits=function(e,r){let o=e.bit<<3|r,n=o<<10;for(;Rt.getBCHDigit(n)-fn>=0;)n^=un<<Rt.getBCHDigit(n)-fn;return(o<<10|n)^_i}});var hn=g((Ic,gn)=>{var Li=Q();function le(t){this.mode=Li.NUMERIC,this.data=t.toString()}le.getBitsLength=function(e){return 10*Math.floor(e/3)+(e%3?e%3*3+1:0)};le.prototype.getLength=function(){return this.data.length};le.prototype.getBitsLength=function(){return le.getBitsLength(this.data.length)};le.prototype.write=function(e){let r,o,n;for(r=0;r+3<=this.data.length;r+=3)o=this.data.substr(r,3),n=parseInt(o,10),e.put(n,10);let i=this.data.length-r;i>0&&(o=this.data.substr(r),n=parseInt(o,10),e.put(n,i*3+1))};gn.exports=le});var yn=g((Tc,mn)=>{var Mi=Q(),kt=["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"," ","$","%","*","+","-",".","/",":"];function ue(t){this.mode=Mi.ALPHANUMERIC,this.data=t}ue.getBitsLength=function(e){return 11*Math.floor(e/2)+6*(e%2)};ue.prototype.getLength=function(){return this.data.length};ue.prototype.getBitsLength=function(){return ue.getBitsLength(this.data.length)};ue.prototype.write=function(e){let r;for(r=0;r+2<=this.data.length;r+=2){let o=kt.indexOf(this.data[r])*45;o+=kt.indexOf(this.data[r+1]),e.put(o,11)}this.data.length%2&&e.put(kt.indexOf(this.data[r]),6)};mn.exports=ue});var vn=g((_c,wn)=>{"use strict";wn.exports=function(e){for(var r=[],o=e.length,n=0;n<o;n++){var i=e.charCodeAt(n);if(i>=55296&&i<=56319&&o>n+1){var s=e.charCodeAt(n+1);s>=56320&&s<=57343&&(i=(i-55296)*1024+s-56320+65536,n+=1)}if(i<128){r.push(i);continue}if(i<2048){r.push(i>>6|192),r.push(i&63|128);continue}if(i<55296||i>=57344&&i<65536){r.push(i>>12|224),r.push(i>>6&63|128),r.push(i&63|128);continue}if(i>=65536&&i<=1114111){r.push(i>>18|240),r.push(i>>12&63|128),r.push(i>>6&63|128),r.push(i&63|128);continue}r.push(239,191,189)}return new Uint8Array(r).buffer}});var Cn=g((Lc,Sn)=>{var Ni=vn(),Bi=Q();function fe(t){this.mode=Bi.BYTE,typeof t=="string"&&(t=Ni(t)),this.data=new Uint8Array(t)}fe.getBitsLength=function(e){return e*8};fe.prototype.getLength=function(){return this.data.length};fe.prototype.getBitsLength=function(){return fe.getBitsLength(this.data.length)};fe.prototype.write=function(t){for(let e=0,r=this.data.length;e<r;e++)t.put(this.data[e],8)};Sn.exports=fe});var xn=g((Mc,bn)=>{var Ri=Q(),ki=Y();function de(t){this.mode=Ri.KANJI,this.data=t}de.getBitsLength=function(e){return e*13};de.prototype.getLength=function(){return this.data.length};de.prototype.getBitsLength=function(){return de.getBitsLength(this.data.length)};de.prototype.write=function(t){let e;for(e=0;e<this.data.length;e++){let r=ki.toSJIS(this.data[e]);if(r>=33088&&r<=40956)r-=33088;else if(r>=57408&&r<=60351)r-=49472;else throw new Error("Invalid SJIS character: "+this.data[e]+`
-Make sure your charset is UTF-8`);r=(r>>>8&255)*192+(r&255),t.put(r,13)}};bn.exports=de});var En=g((Nc,Ot)=>{"use strict";var ve={single_source_shortest_paths:function(t,e,r){var o={},n={};n[e]=0;var i=ve.PriorityQueue.make();i.push(e,0);for(var s,a,c,l,u,p,d,m,C;!i.empty();){s=i.pop(),a=s.value,l=s.cost,u=t[a]||{};for(c in u)u.hasOwnProperty(c)&&(p=u[c],d=l+p,m=n[c],C=typeof n[c]=="undefined",(C||m>d)&&(n[c]=d,i.push(c,d),o[c]=a))}if(typeof r!="undefined"&&typeof n[r]=="undefined"){var x=["Could not find a path from ",e," to ",r,"."].join("");throw new Error(x)}return o},extract_shortest_path_from_predecessor_list:function(t,e){for(var r=[],o=e,n;o;)r.push(o),n=t[o],o=t[o];return r.reverse(),r},find_path:function(t,e,r){var o=ve.single_source_shortest_paths(t,e,r);return ve.extract_shortest_path_from_predecessor_list(o,r)},PriorityQueue:{make:function(t){var e=ve.PriorityQueue,r={},o;t=t||{};for(o in e)e.hasOwnProperty(o)&&(r[o]=e[o]);return r.queue=[],r.sorter=t.sorter||e.default_sorter,r},default_sorter:function(t,e){return t.cost-e.cost},push:function(t,e){var r={value:t,cost:e};this.queue.push(r),this.queue.sort(this.sorter)},pop:function(){return this.queue.shift()},empty:function(){return this.queue.length===0}}};typeof Ot!="undefined"&&(Ot.exports=ve)});var Nn=g(pe=>{var w=Q(),Pn=hn(),An=yn(),In=Cn(),Tn=xn(),Se=Mt(),tt=Y(),Oi=En();function _n(t){return unescape(encodeURIComponent(t)).length}function Ce(t,e,r){let o=[],n;for(;(n=t.exec(r))!==null;)o.push({data:n[0],index:n.index,mode:e,length:n[0].length});return o}function Ln(t){let e=Ce(Se.NUMERIC,w.NUMERIC,t),r=Ce(Se.ALPHANUMERIC,w.ALPHANUMERIC,t),o,n;return tt.isKanjiModeEnabled()?(o=Ce(Se.BYTE,w.BYTE,t),n=Ce(Se.KANJI,w.KANJI,t)):(o=Ce(Se.BYTE_KANJI,w.BYTE,t),n=[]),e.concat(r,o,n).sort(function(s,a){return s.index-a.index}).map(function(s){return{data:s.data,mode:s.mode,length:s.length}})}function Ut(t,e){switch(e){case w.NUMERIC:return Pn.getBitsLength(t);case w.ALPHANUMERIC:return An.getBitsLength(t);case w.KANJI:return Tn.getBitsLength(t);case w.BYTE:return In.getBitsLength(t)}}function Ui(t){return t.reduce(function(e,r){let o=e.length-1>=0?e[e.length-1]:null;return o&&o.mode===r.mode?(e[e.length-1].data+=r.data,e):(e.push(r),e)},[])}function Fi(t){let e=[];for(let r=0;r<t.length;r++){let o=t[r];switch(o.mode){case w.NUMERIC:e.push([o,{data:o.data,mode:w.ALPHANUMERIC,length:o.length},{data:o.data,mode:w.BYTE,length:o.length}]);break;case w.ALPHANUMERIC:e.push([o,{data:o.data,mode:w.BYTE,length:o.length}]);break;case w.KANJI:e.push([o,{data:o.data,mode:w.BYTE,length:_n(o.data)}]);break;case w.BYTE:e.push([{data:o.data,mode:w.BYTE,length:_n(o.data)}])}}return e}function Di(t,e){let r={},o={start:{}},n=["start"];for(let i=0;i<t.length;i++){let s=t[i],a=[];for(let c=0;c<s.length;c++){let l=s[c],u=""+i+c;a.push(u),r[u]={node:l,lastCount:0},o[u]={};for(let p=0;p<n.length;p++){let d=n[p];r[d]&&r[d].node.mode===l.mode?(o[d][u]=Ut(r[d].lastCount+l.length,l.mode)-Ut(r[d].lastCount,l.mode),r[d].lastCount+=l.length):(r[d]&&(r[d].lastCount=l.length),o[d][u]=Ut(l.length,l.mode)+4+w.getCharCountIndicator(l.mode,e))}}n=a}for(let i=0;i<n.length;i++)o[n[i]].end=0;return{map:o,table:r}}function Mn(t,e){let r,o=w.getBestModeForData(t);if(r=w.from(e,o),r!==w.BYTE&&r.bit<o.bit)throw new Error('"'+t+'" cannot be encoded with mode '+w.toString(r)+`.
- Suggested mode is: `+w.toString(o));switch(r===w.KANJI&&!tt.isKanjiModeEnabled()&&(r=w.BYTE),r){case w.NUMERIC:return new Pn(t);case w.ALPHANUMERIC:return new An(t);case w.KANJI:return new Tn(t);case w.BYTE:return new In(t)}}pe.fromArray=function(e){return e.reduce(function(r,o){return typeof o=="string"?r.push(Mn(o,null)):o.data&&r.push(Mn(o.data,o.mode)),r},[])};pe.fromString=function(e,r){let o=Ln(e,tt.isKanjiModeEnabled()),n=Fi(o),i=Di(n,r),s=Oi.find_path(i.map,"start","end"),a=[];for(let c=1;c<s.length-1;c++)a.push(i.table[s[c]].node);return pe.fromArray(Ui(a))};pe.rawSplit=function(e){return pe.fromArray(Ln(e,tt.isKanjiModeEnabled()))}});var Rn=g(Bn=>{var rt=Y(),Ft=Je(),Wi=zr(),ji=$r(),qi=Vr(),zi=Yr(),Dt=Gr(),Wt=It(),Hi=tn(),nt=ln(),$i=pn(),Vi=Q(),jt=Nn();function Ki(t,e){let r=t.size,o=zi.getPositions(e);for(let n=0;n<o.length;n++){let i=o[n][0],s=o[n][1];for(let a=-1;a<=7;a++)if(!(i+a<=-1||r<=i+a))for(let c=-1;c<=7;c++)s+c<=-1||r<=s+c||(a>=0&&a<=6&&(c===0||c===6)||c>=0&&c<=6&&(a===0||a===6)||a>=2&&a<=4&&c>=2&&c<=4?t.set(i+a,s+c,!0,!0):t.set(i+a,s+c,!1,!0))}}function Ji(t){let e=t.size;for(let r=8;r<e-8;r++){let o=r%2==0;t.set(r,6,o,!0),t.set(6,r,o,!0)}}function Yi(t,e){let r=qi.getPositions(e);for(let o=0;o<r.length;o++){let n=r[o][0],i=r[o][1];for(let s=-2;s<=2;s++)for(let a=-2;a<=2;a++)s===-2||s===2||a===-2||a===2||s===0&&a===0?t.set(n+s,i+a,!0,!0):t.set(n+s,i+a,!1,!0)}}function Gi(t,e){let r=t.size,o=nt.getEncodedBits(e),n,i,s;for(let a=0;a<18;a++)n=Math.floor(a/3),i=a%3+r-8-3,s=(o>>a&1)==1,t.set(n,i,s,!0),t.set(i,n,s,!0)}function qt(t,e,r){let o=t.size,n=$i.getEncodedBits(e,r),i,s;for(i=0;i<15;i++)s=(n>>i&1)==1,i<6?t.set(i,8,s,!0):i<8?t.set(i+1,8,s,!0):t.set(o-15+i,8,s,!0),i<8?t.set(8,o-i-1,s,!0):i<9?t.set(8,15-i-1+1,s,!0):t.set(8,15-i-1,s,!0);t.set(o-8,8,1,!0)}function Qi(t,e){let r=t.size,o=-1,n=r-1,i=7,s=0;for(let a=r-1;a>0;a-=2)for(a===6&&a--;;){for(let c=0;c<2;c++)if(!t.isReserved(n,a-c)){let l=!1;s<e.length&&(l=(e[s]>>>i&1)==1),t.set(n,a-c,l),i--,i===-1&&(s++,i=7)}if(n+=o,n<0||r<=n){n-=o,o=-o;break}}}function Zi(t,e,r){let o=new Wi;r.forEach(function(c){o.put(c.mode.bit,4),o.put(c.getLength(),Vi.getCharCountIndicator(c.mode,t)),c.write(o)});let n=rt.getSymbolTotalCodewords(t),i=Wt.getTotalCodewordsCount(t,e),s=(n-i)*8;for(o.getLengthInBits()+4<=s&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(0);let a=(s-o.getLengthInBits())/8;for(let c=0;c<a;c++)o.put(c%2?17:236,8);return Xi(o,t,e)}function Xi(t,e,r){let o=rt.getSymbolTotalCodewords(e),n=Wt.getTotalCodewordsCount(e,r),i=o-n,s=Wt.getBlocksCount(e,r),a=o%s,c=s-a,l=Math.floor(o/s),u=Math.floor(i/s),p=u+1,d=l-u,m=new Hi(d),C=0,x=new Array(s),j=new Array(s),B=0,O=new Uint8Array(t.buffer);for(let E=0;E<s;E++){let D=E<c?u:p;x[E]=O.slice(C,C+D),j[E]=m.encode(x[E]),C+=D,B=Math.max(B,D)}let V=new Uint8Array(o),L=0,T,M;for(T=0;T<B;T++)for(M=0;M<s;M++)T<x[M].length&&(V[L++]=x[M][T]);for(T=0;T<d;T++)for(M=0;M<s;M++)V[L++]=j[M][T];return V}function es(t,e,r,o){let n;if(Array.isArray(t))n=jt.fromArray(t);else if(typeof t=="string"){let l=e;if(!l){let u=jt.rawSplit(t);l=nt.getBestVersionForData(u,r)}n=jt.fromString(t,l||40)}else throw new Error("Invalid data");let i=nt.getBestVersionForData(n,r);if(!i)throw new Error("The amount of data is too big to be stored in a QR Code");if(!e)e=i;else if(e<i)throw new Error(`
+var go=Object.create,xe=Object.defineProperty;var ho=Object.getOwnPropertyDescriptor;var mo=Object.getOwnPropertyNames;var yo=Object.getPrototypeOf,wo=Object.prototype.hasOwnProperty;var Gt=t=>xe(t,"__esModule",{value:!0});var g=(t,e)=>()=>(e||t((e={exports:{}}).exports,e),e.exports),vo=(t,e)=>{for(var r in e)xe(t,r,{get:e[r],enumerable:!0})},Co=(t,e,r)=>{if(e&&typeof e=="object"||typeof e=="function")for(let o of mo(e))!wo.call(t,o)&&o!=="default"&&xe(t,o,{get:()=>e[o],enumerable:!(r=ho(e,o))||r.enumerable});return t},y=t=>Co(Gt(xe(t!=null?go(yo(t)):{},"default",t&&t.__esModule&&"default"in t?{get:()=>t.default,enumerable:!0}:{value:t,enumerable:!0})),t);var q=g((Ee,Pe)=>{(function(t,e){var r={version:"2.13.2",areas:{},apis:{},inherit:function(n,i){for(var s in n)i.hasOwnProperty(s)||Object.defineProperty(i,s,Object.getOwnPropertyDescriptor(n,s));return i},stringify:function(n,i){return n===void 0||typeof n=="function"?n+"":JSON.stringify(n,i||r.replace)},parse:function(n,i){try{return JSON.parse(n,i||r.revive)}catch(s){return n}},fn:function(n,i){r.storeAPI[n]=i;for(var s in r.apis)r.apis[s][n]=i},get:function(n,i){return n.getItem(i)},set:function(n,i,s){n.setItem(i,s)},remove:function(n,i){n.removeItem(i)},key:function(n,i){return n.key(i)},length:function(n){return n.length},clear:function(n){n.clear()},Store:function(n,i,s){var a=r.inherit(r.storeAPI,function(l,u,d){return arguments.length===0?a.getAll():typeof u=="function"?a.transact(l,u,d):u!==void 0?a.set(l,u,d):typeof l=="string"||typeof l=="number"?a.get(l):typeof l=="function"?a.each(l):l?a.setAll(l,u):a.clear()});a._id=n;try{var c="__store2_test";i.setItem(c,"ok"),a._area=i,i.removeItem(c)}catch(l){a._area=r.storage("fake")}return a._ns=s||"",r.areas[n]||(r.areas[n]=a._area),r.apis[a._ns+a._id]||(r.apis[a._ns+a._id]=a),a},storeAPI:{area:function(n,i){var s=this[n];return(!s||!s.area)&&(s=r.Store(n,i,this._ns),this[n]||(this[n]=s)),s},namespace:function(n,i){if(!n)return this._ns?this._ns.substring(0,this._ns.length-1):"";var s=n,a=this[s];if((!a||!a.namespace)&&(a=r.Store(this._id,this._area,this._ns+s+"."),this[s]||(this[s]=a),!i))for(var c in r.areas)a.area(c,r.areas[c]);return a},isFake:function(n){return n?(this._real=this._area,this._area=r.storage("fake")):n===!1&&(this._area=this._real||this._area),this._area.name==="fake"},toString:function(){return"store"+(this._ns?"."+this.namespace():"")+"["+this._id+"]"},has:function(n){return this._area.has?this._area.has(this._in(n)):this._in(n)in this._area},size:function(){return this.keys().length},each:function(n,i){for(var s=0,a=r.length(this._area);s<a;s++){var c=this._out(r.key(this._area,s));if(c!==void 0&&n.call(this,c,this.get(c),i)===!1)break;a>r.length(this._area)&&(a--,s--)}return i||this},keys:function(n){return this.each(function(i,s,a){a.push(i)},n||[])},get:function(n,i){var s=r.get(this._area,this._in(n)),a;return typeof i=="function"&&(a=i,i=null),s!==null?r.parse(s,a):i!=null?i:s},getAll:function(n){return this.each(function(i,s,a){a[i]=s},n||{})},transact:function(n,i,s){var a=this.get(n,s),c=i(a);return this.set(n,c===void 0?a:c),this},set:function(n,i,s){var a=this.get(n),c;return a!=null&&s===!1?i:(typeof s!="boolean"&&(c=s),r.set(this._area,this._in(n),r.stringify(i,c))||a)},setAll:function(n,i){var s,a;for(var c in n)a=n[c],this.set(c,a,i)!==a&&(s=!0);return s},add:function(n,i,s){var a=this.get(n);if(a instanceof Array)i=a.concat(i);else if(a!==null){var c=typeof a;if(c===typeof i&&c==="object"){for(var l in i)a[l]=i[l];i=a}else i=a+i}return r.set(this._area,this._in(n),r.stringify(i,s)),i},remove:function(n,i){var s=this.get(n,i);return r.remove(this._area,this._in(n)),s},clear:function(){return this._ns?this.each(function(n){r.remove(this._area,this._in(n))},1):r.clear(this._area),this},clearAll:function(){var n=this._area;for(var i in r.areas)r.areas.hasOwnProperty(i)&&(this._area=r.areas[i],this.clear());return this._area=n,this},_in:function(n){return typeof n!="string"&&(n=r.stringify(n)),this._ns?this._ns+n:n},_out:function(n){return this._ns?n&&n.indexOf(this._ns)===0?n.substring(this._ns.length):void 0:n}},storage:function(n){return r.inherit(r.storageAPI,{items:{},name:n})},storageAPI:{length:0,has:function(n){return this.items.hasOwnProperty(n)},key:function(n){var i=0;for(var s in this.items)if(this.has(s)&&n===i++)return s},setItem:function(n,i){this.has(n)||this.length++,this.items[n]=i},removeItem:function(n){this.has(n)&&(delete this.items[n],this.length--)},getItem:function(n){return this.has(n)?this.items[n]:null},clear:function(){for(var n in this.items)this.removeItem(n)}}},o=r.Store("local",function(){try{return localStorage}catch(n){}}());o.local=o,o._=r,o.area("session",function(){try{return sessionStorage}catch(n){}}()),o.area("page",r.storage("page")),typeof e=="function"&&e.amd!==void 0?e("store2",[],function(){return o}):typeof Pe!="undefined"&&Pe.exports?Pe.exports=o:(t.store&&(r.conflict=t.store),t.store=o)})(Ee,Ee&&Ee.define)});var vr=g((oc,wr)=>{"use strict";var Yo="SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";wr.exports=Yo});var xr=g((ic,br)=>{"use strict";var Go=vr();function Cr(){}function Sr(){}Sr.resetWarningCache=Cr;br.exports=function(){function t(o,n,i,s,a,c){if(c!==Go){var l=new Error("Calling PropTypes validators directly is not supported by the `prop-types` package. Use PropTypes.checkPropTypes() to call them. Read more at http://fb.me/use-check-prop-types");throw l.name="Invariant Violation",l}}t.isRequired=t;function e(){return t}var r={array:t,bigint:t,bool:t,func:t,number:t,object:t,string:t,symbol:t,any:t,arrayOf:e,element:t,elementType:t,instanceOf:e,node:t,objectOf:e,oneOf:e,oneOfType:e,shape:e,exact:e,checkPropTypes:Sr,resetWarningCache:Cr};return r.PropTypes=r,r}});var yt=g((cc,Er)=>{Er.exports=xr()();var sc,ac});var Ar=g(C=>{"use strict";var T=typeof Symbol=="function"&&Symbol.for,vt=T?Symbol.for("react.element"):60103,Ct=T?Symbol.for("react.portal"):60106,We=T?Symbol.for("react.fragment"):60107,je=T?Symbol.for("react.strict_mode"):60108,qe=T?Symbol.for("react.profiler"):60114,ze=T?Symbol.for("react.provider"):60109,He=T?Symbol.for("react.context"):60110,St=T?Symbol.for("react.async_mode"):60111,$e=T?Symbol.for("react.concurrent_mode"):60111,Ve=T?Symbol.for("react.forward_ref"):60112,Ke=T?Symbol.for("react.suspense"):60113,Xo=T?Symbol.for("react.suspense_list"):60120,Je=T?Symbol.for("react.memo"):60115,Ye=T?Symbol.for("react.lazy"):60116,ei=T?Symbol.for("react.block"):60121,ti=T?Symbol.for("react.fundamental"):60117,ri=T?Symbol.for("react.responder"):60118,ni=T?Symbol.for("react.scope"):60119;function F(t){if(typeof t=="object"&&t!==null){var e=t.$$typeof;switch(e){case vt:switch(t=t.type,t){case St:case $e:case We:case qe:case je:case Ke:return t;default:switch(t=t&&t.$$typeof,t){case He:case Ve:case Ye:case Je:case ze:return t;default:return e}}case Ct:return e}}}function Pr(t){return F(t)===$e}C.AsyncMode=St;C.ConcurrentMode=$e;C.ContextConsumer=He;C.ContextProvider=ze;C.Element=vt;C.ForwardRef=Ve;C.Fragment=We;C.Lazy=Ye;C.Memo=Je;C.Portal=Ct;C.Profiler=qe;C.StrictMode=je;C.Suspense=Ke;C.isAsyncMode=function(t){return Pr(t)||F(t)===St};C.isConcurrentMode=Pr;C.isContextConsumer=function(t){return F(t)===He};C.isContextProvider=function(t){return F(t)===ze};C.isElement=function(t){return typeof t=="object"&&t!==null&&t.$$typeof===vt};C.isForwardRef=function(t){return F(t)===Ve};C.isFragment=function(t){return F(t)===We};C.isLazy=function(t){return F(t)===Ye};C.isMemo=function(t){return F(t)===Je};C.isPortal=function(t){return F(t)===Ct};C.isProfiler=function(t){return F(t)===qe};C.isStrictMode=function(t){return F(t)===je};C.isSuspense=function(t){return F(t)===Ke};C.isValidElementType=function(t){return typeof t=="string"||typeof t=="function"||t===We||t===$e||t===qe||t===je||t===Ke||t===Xo||typeof t=="object"&&t!==null&&(t.$$typeof===Ye||t.$$typeof===Je||t.$$typeof===ze||t.$$typeof===He||t.$$typeof===Ve||t.$$typeof===ti||t.$$typeof===ri||t.$$typeof===ni||t.$$typeof===ei)};C.typeOf=F});var Tr=g((fc,Ir)=>{"use strict";Ir.exports=Ar()});var kr=g((dc,Rr)=>{"use strict";var bt=Tr(),oi={childContextTypes:!0,contextType:!0,contextTypes:!0,defaultProps:!0,displayName:!0,getDefaultProps:!0,getDerivedStateFromError:!0,getDerivedStateFromProps:!0,mixins:!0,propTypes:!0,type:!0},ii={name:!0,length:!0,prototype:!0,caller:!0,callee:!0,arguments:!0,arity:!0},si={$$typeof:!0,render:!0,defaultProps:!0,displayName:!0,propTypes:!0},Lr={$$typeof:!0,compare:!0,defaultProps:!0,displayName:!0,propTypes:!0,type:!0},xt={};xt[bt.ForwardRef]=si;xt[bt.Memo]=Lr;function _r(t){return bt.isMemo(t)?Lr:xt[t.$$typeof]||oi}var ai=Object.defineProperty,ci=Object.getOwnPropertyNames,Mr=Object.getOwnPropertySymbols,li=Object.getOwnPropertyDescriptor,ui=Object.getPrototypeOf,Nr=Object.prototype;function Br(t,e,r){if(typeof e!="string"){if(Nr){var o=ui(e);o&&o!==Nr&&Br(t,o,r)}var n=ci(e);Mr&&(n=n.concat(Mr(e)));for(var i=_r(t),s=_r(e),a=0;a<n.length;++a){var c=n[a];if(!ii[c]&&!(r&&r[c])&&!(s&&s[c])&&!(i&&i[c])){var l=li(e,c);try{ai(t,c,l)}catch(u){}}}}return t}Rr.exports=Br});var zr=g((bc,qr)=>{qr.exports=function(){return typeof Promise=="function"&&Promise.prototype&&Promise.prototype.then}});var Y=g(ne=>{var At,yi=[0,26,44,70,100,134,172,196,242,292,346,404,466,532,581,655,733,815,901,991,1085,1156,1258,1364,1474,1588,1706,1828,1921,2051,2185,2323,2465,2611,2761,2876,3034,3196,3362,3532,3706];ne.getSymbolSize=function(e){if(!e)throw new Error('"version" cannot be null or undefined');if(e<1||e>40)throw new Error('"version" should be in range from 1 to 40');return e*4+17};ne.getSymbolTotalCodewords=function(e){return yi[e]};ne.getBCHDigit=function(t){let e=0;for(;t!==0;)e++,t>>>=1;return e};ne.setToSJISFunction=function(e){if(typeof e!="function")throw new Error('"toSJISFunc" is not a valid function.');At=e};ne.isKanjiModeEnabled=function(){return typeof At!="undefined"};ne.toSJIS=function(e){return At(e)}});var Ge=g(U=>{U.L={bit:1};U.M={bit:0};U.Q={bit:3};U.H={bit:2};function wi(t){if(typeof t!="string")throw new Error("Param is not a string");switch(t.toLowerCase()){case"l":case"low":return U.L;case"m":case"medium":return U.M;case"q":case"quartile":return U.Q;case"h":case"high":return U.H;default:throw new Error("Unknown EC Level: "+t)}}U.isValid=function(e){return e&&typeof e.bit!="undefined"&&e.bit>=0&&e.bit<4};U.from=function(e,r){if(U.isValid(e))return e;try{return wi(e)}catch(o){return r}}});var Vr=g((Pc,$r)=>{function Hr(){this.buffer=[],this.length=0}Hr.prototype={get:function(t){let e=Math.floor(t/8);return(this.buffer[e]>>>7-t%8&1)==1},put:function(t,e){for(let r=0;r<e;r++)this.putBit((t>>>e-r-1&1)==1)},getLengthInBits:function(){return this.length},putBit:function(t){let e=Math.floor(this.length/8);this.buffer.length<=e&&this.buffer.push(0),t&&(this.buffer[e]|=128>>>this.length%8),this.length++}};$r.exports=Hr});var Jr=g((Ac,Kr)=>{function he(t){if(!t||t<1)throw new Error("BitMatrix size must be defined and greater than 0");this.size=t,this.data=new Uint8Array(t*t),this.reservedBit=new Uint8Array(t*t)}he.prototype.set=function(t,e,r,o){let n=t*this.size+e;this.data[n]=r,o&&(this.reservedBit[n]=!0)};he.prototype.get=function(t,e){return this.data[t*this.size+e]};he.prototype.xor=function(t,e,r){this.data[t*this.size+e]^=r};he.prototype.isReserved=function(t,e){return this.reservedBit[t*this.size+e]};Kr.exports=he});var Yr=g(Qe=>{var vi=Y().getSymbolSize;Qe.getRowColCoords=function(e){if(e===1)return[];let r=Math.floor(e/7)+2,o=vi(e),n=o===145?26:Math.ceil((o-13)/(2*r-2))*2,i=[o-7];for(let s=1;s<r-1;s++)i[s]=i[s-1]-n;return i.push(6),i.reverse()};Qe.getPositions=function(e){let r=[],o=Qe.getRowColCoords(e),n=o.length;for(let i=0;i<n;i++)for(let s=0;s<n;s++)i===0&&s===0||i===0&&s===n-1||i===n-1&&s===0||r.push([o[i],o[s]]);return r}});var Zr=g(Qr=>{var Ci=Y().getSymbolSize,Gr=7;Qr.getPositions=function(e){let r=Ci(e);return[[0,0],[r-Gr,0],[0,r-Gr]]}});var Xr=g(S=>{S.Patterns={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7};var oe={N1:3,N2:3,N3:40,N4:10};S.isValid=function(e){return e!=null&&e!==""&&!isNaN(e)&&e>=0&&e<=7};S.from=function(e){return S.isValid(e)?parseInt(e,10):void 0};S.getPenaltyN1=function(e){let r=e.size,o=0,n=0,i=0,s=null,a=null;for(let c=0;c<r;c++){n=i=0,s=a=null;for(let l=0;l<r;l++){let u=e.get(c,l);u===s?n++:(n>=5&&(o+=oe.N1+(n-5)),s=u,n=1),u=e.get(l,c),u===a?i++:(i>=5&&(o+=oe.N1+(i-5)),a=u,i=1)}n>=5&&(o+=oe.N1+(n-5)),i>=5&&(o+=oe.N1+(i-5))}return o};S.getPenaltyN2=function(e){let r=e.size,o=0;for(let n=0;n<r-1;n++)for(let i=0;i<r-1;i++){let s=e.get(n,i)+e.get(n,i+1)+e.get(n+1,i)+e.get(n+1,i+1);(s===4||s===0)&&o++}return o*oe.N2};S.getPenaltyN3=function(e){let r=e.size,o=0,n=0,i=0;for(let s=0;s<r;s++){n=i=0;for(let a=0;a<r;a++)n=n<<1&2047|e.get(s,a),a>=10&&(n===1488||n===93)&&o++,i=i<<1&2047|e.get(a,s),a>=10&&(i===1488||i===93)&&o++}return o*oe.N3};S.getPenaltyN4=function(e){let r=0,o=e.data.length;for(let i=0;i<o;i++)r+=e.data[i];return Math.abs(Math.ceil(r*100/o/5)-10)*oe.N4};function Si(t,e,r){switch(t){case S.Patterns.PATTERN000:return(e+r)%2==0;case S.Patterns.PATTERN001:return e%2==0;case S.Patterns.PATTERN010:return r%3==0;case S.Patterns.PATTERN011:return(e+r)%3==0;case S.Patterns.PATTERN100:return(Math.floor(e/2)+Math.floor(r/3))%2==0;case S.Patterns.PATTERN101:return e*r%2+e*r%3==0;case S.Patterns.PATTERN110:return(e*r%2+e*r%3)%2==0;case S.Patterns.PATTERN111:return(e*r%3+(e+r)%2)%2==0;default:throw new Error("bad maskPattern:"+t)}}S.applyMask=function(e,r){let o=r.size;for(let n=0;n<o;n++)for(let i=0;i<o;i++)r.isReserved(i,n)||r.xor(i,n,Si(e,i,n))};S.getBestMask=function(e,r){let o=Object.keys(S.Patterns).length,n=0,i=Infinity;for(let s=0;s<o;s++){r(s),S.applyMask(s,e);let a=S.getPenaltyN1(e)+S.getPenaltyN2(e)+S.getPenaltyN3(e)+S.getPenaltyN4(e);S.applyMask(s,e),a<i&&(i=a,n=s)}return n}});var Tt=g(It=>{var G=Ge(),Ze=[1,1,1,1,1,1,1,1,1,1,2,2,1,2,2,4,1,2,4,4,2,4,4,4,2,4,6,5,2,4,6,6,2,5,8,8,4,5,8,8,4,5,8,11,4,8,10,11,4,9,12,16,4,9,16,16,6,10,12,18,6,10,17,16,6,11,16,19,6,13,18,21,7,14,21,25,8,16,20,25,8,17,23,25,9,17,23,34,9,18,25,30,10,20,27,32,12,21,29,35,12,23,34,37,12,25,34,40,13,26,35,42,14,28,38,45,15,29,40,48,16,31,43,51,17,33,45,54,18,35,48,57,19,37,51,60,19,38,53,63,20,40,56,66,21,43,59,70,22,45,62,74,24,47,65,77,25,49,68,81],Xe=[7,10,13,17,10,16,22,28,15,26,36,44,20,36,52,64,26,48,72,88,36,64,96,112,40,72,108,130,48,88,132,156,60,110,160,192,72,130,192,224,80,150,224,264,96,176,260,308,104,198,288,352,120,216,320,384,132,240,360,432,144,280,408,480,168,308,448,532,180,338,504,588,196,364,546,650,224,416,600,700,224,442,644,750,252,476,690,816,270,504,750,900,300,560,810,960,312,588,870,1050,336,644,952,1110,360,700,1020,1200,390,728,1050,1260,420,784,1140,1350,450,812,1200,1440,480,868,1290,1530,510,924,1350,1620,540,980,1440,1710,570,1036,1530,1800,570,1064,1590,1890,600,1120,1680,1980,630,1204,1770,2100,660,1260,1860,2220,720,1316,1950,2310,750,1372,2040,2430];It.getBlocksCount=function(e,r){switch(r){case G.L:return Ze[(e-1)*4+0];case G.M:return Ze[(e-1)*4+1];case G.Q:return Ze[(e-1)*4+2];case G.H:return Ze[(e-1)*4+3];default:return}};It.getTotalCodewordsCount=function(e,r){switch(r){case G.L:return Xe[(e-1)*4+0];case G.M:return Xe[(e-1)*4+1];case G.Q:return Xe[(e-1)*4+2];case G.H:return Xe[(e-1)*4+3];default:return}}});var en=g(tt=>{var me=new Uint8Array(512),et=new Uint8Array(256);(function(){let e=1;for(let r=0;r<255;r++)me[r]=e,et[e]=r,e<<=1,e&256&&(e^=285);for(let r=255;r<512;r++)me[r]=me[r-255]})();tt.log=function(e){if(e<1)throw new Error("log("+e+")");return et[e]};tt.exp=function(e){return me[e]};tt.mul=function(e,r){return e===0||r===0?0:me[et[e]+et[r]]}});var tn=g(ye=>{var Lt=en();ye.mul=function(e,r){let o=new Uint8Array(e.length+r.length-1);for(let n=0;n<e.length;n++)for(let i=0;i<r.length;i++)o[n+i]^=Lt.mul(e[n],r[i]);return o};ye.mod=function(e,r){let o=new Uint8Array(e);for(;o.length-r.length>=0;){let n=o[0];for(let s=0;s<r.length;s++)o[s]^=Lt.mul(r[s],n);let i=0;for(;i<o.length&&o[i]===0;)i++;o=o.slice(i)}return o};ye.generateECPolynomial=function(e){let r=new Uint8Array([1]);for(let o=0;o<e;o++)r=ye.mul(r,new Uint8Array([1,Lt.exp(o)]));return r}});var on=g((Bc,nn)=>{var rn=tn();function _t(t){this.genPoly=void 0,this.degree=t,this.degree&&this.initialize(this.degree)}_t.prototype.initialize=function(e){this.degree=e,this.genPoly=rn.generateECPolynomial(this.degree)};_t.prototype.encode=function(e){if(!this.genPoly)throw new Error("Encoder not initialized");let r=new Uint8Array(e.length+this.degree);r.set(e);let o=rn.mod(r,this.genPoly),n=this.degree-o.length;if(n>0){let i=new Uint8Array(this.degree);return i.set(o,n),i}return o};nn.exports=_t});var Mt=g(sn=>{sn.isValid=function(e){return!isNaN(e)&&e>=1&&e<=40}});var Nt=g($=>{var an="[0-9]+",bi="[A-Z $%*+\\-./:]+",we="(?:[u3000-u303F]|[u3040-u309F]|[u30A0-u30FF]|[uFF00-uFFEF]|[u4E00-u9FAF]|[u2605-u2606]|[u2190-u2195]|u203B|[u2010u2015u2018u2019u2025u2026u201Cu201Du2225u2260]|[u0391-u0451]|[u00A7u00A8u00B1u00B4u00D7u00F7])+";we=we.replace(/u/g,"\\u");var xi="(?:(?![A-Z0-9 $%*+\\-./:]|"+we+`)(?:.|[\r
+]))+`;$.KANJI=new RegExp(we,"g");$.BYTE_KANJI=new RegExp("[^A-Z0-9 $%*+\\-./:]+","g");$.BYTE=new RegExp(xi,"g");$.NUMERIC=new RegExp(an,"g");$.ALPHANUMERIC=new RegExp(bi,"g");var Ei=new RegExp("^"+we+"$"),Pi=new RegExp("^"+an+"$"),Ai=new RegExp("^[A-Z0-9 $%*+\\-./:]+$");$.testKanji=function(e){return Ei.test(e)};$.testNumeric=function(e){return Pi.test(e)};$.testAlphanumeric=function(e){return Ai.test(e)}});var Q=g(P=>{var Ii=Mt(),Bt=Nt();P.NUMERIC={id:"Numeric",bit:1<<0,ccBits:[10,12,14]};P.ALPHANUMERIC={id:"Alphanumeric",bit:1<<1,ccBits:[9,11,13]};P.BYTE={id:"Byte",bit:1<<2,ccBits:[8,16,16]};P.KANJI={id:"Kanji",bit:1<<3,ccBits:[8,10,12]};P.MIXED={bit:-1};P.getCharCountIndicator=function(e,r){if(!e.ccBits)throw new Error("Invalid mode: "+e);if(!Ii.isValid(r))throw new Error("Invalid version: "+r);return r>=1&&r<10?e.ccBits[0]:r<27?e.ccBits[1]:e.ccBits[2]};P.getBestModeForData=function(e){return Bt.testNumeric(e)?P.NUMERIC:Bt.testAlphanumeric(e)?P.ALPHANUMERIC:Bt.testKanji(e)?P.KANJI:P.BYTE};P.toString=function(e){if(e&&e.id)return e.id;throw new Error("Invalid mode")};P.isValid=function(e){return e&&e.bit&&e.ccBits};function Ti(t){if(typeof t!="string")throw new Error("Param is not a string");switch(t.toLowerCase()){case"numeric":return P.NUMERIC;case"alphanumeric":return P.ALPHANUMERIC;case"kanji":return P.KANJI;case"byte":return P.BYTE;default:throw new Error("Unknown mode: "+t)}}P.from=function(e,r){if(P.isValid(e))return e;try{return Ti(e)}catch(o){return r}}});var dn=g(ie=>{var rt=Y(),Li=Tt(),cn=Ge(),Z=Q(),Rt=Mt(),ln=1<<12|1<<11|1<<10|1<<9|1<<8|1<<5|1<<2|1<<0,un=rt.getBCHDigit(ln);function _i(t,e,r){for(let o=1;o<=40;o++)if(e<=ie.getCapacity(o,r,t))return o}function fn(t,e){return Z.getCharCountIndicator(t,e)+4}function Mi(t,e){let r=0;return t.forEach(function(o){r+=fn(o.mode,e)+o.getBitsLength()}),r}function Ni(t,e){for(let r=1;r<=40;r++)if(Mi(t,r)<=ie.getCapacity(r,e,Z.MIXED))return r}ie.from=function(e,r){return Rt.isValid(e)?parseInt(e,10):r};ie.getCapacity=function(e,r,o){if(!Rt.isValid(e))throw new Error("Invalid QR Code version");typeof o=="undefined"&&(o=Z.BYTE);let n=rt.getSymbolTotalCodewords(e),i=Li.getTotalCodewordsCount(e,r),s=(n-i)*8;if(o===Z.MIXED)return s;let a=s-fn(o,e);switch(o){case Z.NUMERIC:return Math.floor(a/10*3);case Z.ALPHANUMERIC:return Math.floor(a/11*2);case Z.KANJI:return Math.floor(a/13);case Z.BYTE:default:return Math.floor(a/8)}};ie.getBestVersionForData=function(e,r){let o,n=cn.from(r,cn.M);if(Array.isArray(e)){if(e.length>1)return Ni(e,n);if(e.length===0)return 1;o=e[0]}else o=e;return _i(o.mode,o.getLength(),n)};ie.getEncodedBits=function(e){if(!Rt.isValid(e)||e<7)throw new Error("Invalid QR Code version");let r=e<<12;for(;rt.getBCHDigit(r)-un>=0;)r^=ln<<rt.getBCHDigit(r)-un;return e<<12|r}});var mn=g(hn=>{var kt=Y(),pn=1<<10|1<<8|1<<5|1<<4|1<<2|1<<1|1<<0,Bi=1<<14|1<<12|1<<10|1<<4|1<<1,gn=kt.getBCHDigit(pn);hn.getEncodedBits=function(e,r){let o=e.bit<<3|r,n=o<<10;for(;kt.getBCHDigit(n)-gn>=0;)n^=pn<<kt.getBCHDigit(n)-gn;return(o<<10|n)^Bi}});var wn=g((Dc,yn)=>{var Ri=Q();function le(t){this.mode=Ri.NUMERIC,this.data=t.toString()}le.getBitsLength=function(e){return 10*Math.floor(e/3)+(e%3?e%3*3+1:0)};le.prototype.getLength=function(){return this.data.length};le.prototype.getBitsLength=function(){return le.getBitsLength(this.data.length)};le.prototype.write=function(e){let r,o,n;for(r=0;r+3<=this.data.length;r+=3)o=this.data.substr(r,3),n=parseInt(o,10),e.put(n,10);let i=this.data.length-r;i>0&&(o=this.data.substr(r),n=parseInt(o,10),e.put(n,i*3+1))};yn.exports=le});var Cn=g((Wc,vn)=>{var ki=Q(),Ft=["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"," ","$","%","*","+","-",".","/",":"];function ue(t){this.mode=ki.ALPHANUMERIC,this.data=t}ue.getBitsLength=function(e){return 11*Math.floor(e/2)+6*(e%2)};ue.prototype.getLength=function(){return this.data.length};ue.prototype.getBitsLength=function(){return ue.getBitsLength(this.data.length)};ue.prototype.write=function(e){let r;for(r=0;r+2<=this.data.length;r+=2){let o=Ft.indexOf(this.data[r])*45;o+=Ft.indexOf(this.data[r+1]),e.put(o,11)}this.data.length%2&&e.put(Ft.indexOf(this.data[r]),6)};vn.exports=ue});var bn=g((jc,Sn)=>{"use strict";Sn.exports=function(e){for(var r=[],o=e.length,n=0;n<o;n++){var i=e.charCodeAt(n);if(i>=55296&&i<=56319&&o>n+1){var s=e.charCodeAt(n+1);s>=56320&&s<=57343&&(i=(i-55296)*1024+s-56320+65536,n+=1)}if(i<128){r.push(i);continue}if(i<2048){r.push(i>>6|192),r.push(i&63|128);continue}if(i<55296||i>=57344&&i<65536){r.push(i>>12|224),r.push(i>>6&63|128),r.push(i&63|128);continue}if(i>=65536&&i<=1114111){r.push(i>>18|240),r.push(i>>12&63|128),r.push(i>>6&63|128),r.push(i&63|128);continue}r.push(239,191,189)}return new Uint8Array(r).buffer}});var En=g((qc,xn)=>{var Fi=bn(),Oi=Q();function fe(t){this.mode=Oi.BYTE,typeof t=="string"&&(t=Fi(t)),this.data=new Uint8Array(t)}fe.getBitsLength=function(e){return e*8};fe.prototype.getLength=function(){return this.data.length};fe.prototype.getBitsLength=function(){return fe.getBitsLength(this.data.length)};fe.prototype.write=function(t){for(let e=0,r=this.data.length;e<r;e++)t.put(this.data[e],8)};xn.exports=fe});var An=g((zc,Pn)=>{var Ui=Q(),Di=Y();function de(t){this.mode=Ui.KANJI,this.data=t}de.getBitsLength=function(e){return e*13};de.prototype.getLength=function(){return this.data.length};de.prototype.getBitsLength=function(){return de.getBitsLength(this.data.length)};de.prototype.write=function(t){let e;for(e=0;e<this.data.length;e++){let r=Di.toSJIS(this.data[e]);if(r>=33088&&r<=40956)r-=33088;else if(r>=57408&&r<=60351)r-=49472;else throw new Error("Invalid SJIS character: "+this.data[e]+`
+Make sure your charset is UTF-8`);r=(r>>>8&255)*192+(r&255),t.put(r,13)}};Pn.exports=de});var In=g((Hc,Ot)=>{"use strict";var ve={single_source_shortest_paths:function(t,e,r){var o={},n={};n[e]=0;var i=ve.PriorityQueue.make();i.push(e,0);for(var s,a,c,l,u,d,f,h,b;!i.empty();){s=i.pop(),a=s.value,l=s.cost,u=t[a]||{};for(c in u)u.hasOwnProperty(c)&&(d=u[c],f=l+d,h=n[c],b=typeof n[c]=="undefined",(b||h>f)&&(n[c]=f,i.push(c,f),o[c]=a))}if(typeof r!="undefined"&&typeof n[r]=="undefined"){var A=["Could not find a path from ",e," to ",r,"."].join("");throw new Error(A)}return o},extract_shortest_path_from_predecessor_list:function(t,e){for(var r=[],o=e,n;o;)r.push(o),n=t[o],o=t[o];return r.reverse(),r},find_path:function(t,e,r){var o=ve.single_source_shortest_paths(t,e,r);return ve.extract_shortest_path_from_predecessor_list(o,r)},PriorityQueue:{make:function(t){var e=ve.PriorityQueue,r={},o;t=t||{};for(o in e)e.hasOwnProperty(o)&&(r[o]=e[o]);return r.queue=[],r.sorter=t.sorter||e.default_sorter,r},default_sorter:function(t,e){return t.cost-e.cost},push:function(t,e){var r={value:t,cost:e};this.queue.push(r),this.queue.sort(this.sorter)},pop:function(){return this.queue.shift()},empty:function(){return this.queue.length===0}}};typeof Ot!="undefined"&&(Ot.exports=ve)});var kn=g(pe=>{var v=Q(),Tn=wn(),Ln=Cn(),_n=En(),Mn=An(),Ce=Nt(),nt=Y(),Wi=In();function Nn(t){return unescape(encodeURIComponent(t)).length}function Se(t,e,r){let o=[],n;for(;(n=t.exec(r))!==null;)o.push({data:n[0],index:n.index,mode:e,length:n[0].length});return o}function Bn(t){let e=Se(Ce.NUMERIC,v.NUMERIC,t),r=Se(Ce.ALPHANUMERIC,v.ALPHANUMERIC,t),o,n;return nt.isKanjiModeEnabled()?(o=Se(Ce.BYTE,v.BYTE,t),n=Se(Ce.KANJI,v.KANJI,t)):(o=Se(Ce.BYTE_KANJI,v.BYTE,t),n=[]),e.concat(r,o,n).sort(function(s,a){return s.index-a.index}).map(function(s){return{data:s.data,mode:s.mode,length:s.length}})}function Ut(t,e){switch(e){case v.NUMERIC:return Tn.getBitsLength(t);case v.ALPHANUMERIC:return Ln.getBitsLength(t);case v.KANJI:return Mn.getBitsLength(t);case v.BYTE:return _n.getBitsLength(t)}}function ji(t){return t.reduce(function(e,r){let o=e.length-1>=0?e[e.length-1]:null;return o&&o.mode===r.mode?(e[e.length-1].data+=r.data,e):(e.push(r),e)},[])}function qi(t){let e=[];for(let r=0;r<t.length;r++){let o=t[r];switch(o.mode){case v.NUMERIC:e.push([o,{data:o.data,mode:v.ALPHANUMERIC,length:o.length},{data:o.data,mode:v.BYTE,length:o.length}]);break;case v.ALPHANUMERIC:e.push([o,{data:o.data,mode:v.BYTE,length:o.length}]);break;case v.KANJI:e.push([o,{data:o.data,mode:v.BYTE,length:Nn(o.data)}]);break;case v.BYTE:e.push([{data:o.data,mode:v.BYTE,length:Nn(o.data)}])}}return e}function zi(t,e){let r={},o={start:{}},n=["start"];for(let i=0;i<t.length;i++){let s=t[i],a=[];for(let c=0;c<s.length;c++){let l=s[c],u=""+i+c;a.push(u),r[u]={node:l,lastCount:0},o[u]={};for(let d=0;d<n.length;d++){let f=n[d];r[f]&&r[f].node.mode===l.mode?(o[f][u]=Ut(r[f].lastCount+l.length,l.mode)-Ut(r[f].lastCount,l.mode),r[f].lastCount+=l.length):(r[f]&&(r[f].lastCount=l.length),o[f][u]=Ut(l.length,l.mode)+4+v.getCharCountIndicator(l.mode,e))}}n=a}for(let i=0;i<n.length;i++)o[n[i]].end=0;return{map:o,table:r}}function Rn(t,e){let r,o=v.getBestModeForData(t);if(r=v.from(e,o),r!==v.BYTE&&r.bit<o.bit)throw new Error('"'+t+'" cannot be encoded with mode '+v.toString(r)+`.
+ Suggested mode is: `+v.toString(o));switch(r===v.KANJI&&!nt.isKanjiModeEnabled()&&(r=v.BYTE),r){case v.NUMERIC:return new Tn(t);case v.ALPHANUMERIC:return new Ln(t);case v.KANJI:return new Mn(t);case v.BYTE:return new _n(t)}}pe.fromArray=function(e){return e.reduce(function(r,o){return typeof o=="string"?r.push(Rn(o,null)):o.data&&r.push(Rn(o.data,o.mode)),r},[])};pe.fromString=function(e,r){let o=Bn(e,nt.isKanjiModeEnabled()),n=qi(o),i=zi(n,r),s=Wi.find_path(i.map,"start","end"),a=[];for(let c=1;c<s.length-1;c++)a.push(i.table[s[c]].node);return pe.fromArray(ji(a))};pe.rawSplit=function(e){return pe.fromArray(Bn(e,nt.isKanjiModeEnabled()))}});var On=g(Fn=>{var ot=Y(),Dt=Ge(),Hi=Vr(),$i=Jr(),Vi=Yr(),Ki=Zr(),Wt=Xr(),jt=Tt(),Ji=on(),it=dn(),Yi=mn(),Gi=Q(),qt=kn();function Qi(t,e){let r=t.size,o=Ki.getPositions(e);for(let n=0;n<o.length;n++){let i=o[n][0],s=o[n][1];for(let a=-1;a<=7;a++)if(!(i+a<=-1||r<=i+a))for(let c=-1;c<=7;c++)s+c<=-1||r<=s+c||(a>=0&&a<=6&&(c===0||c===6)||c>=0&&c<=6&&(a===0||a===6)||a>=2&&a<=4&&c>=2&&c<=4?t.set(i+a,s+c,!0,!0):t.set(i+a,s+c,!1,!0))}}function Zi(t){let e=t.size;for(let r=8;r<e-8;r++){let o=r%2==0;t.set(r,6,o,!0),t.set(6,r,o,!0)}}function Xi(t,e){let r=Vi.getPositions(e);for(let o=0;o<r.length;o++){let n=r[o][0],i=r[o][1];for(let s=-2;s<=2;s++)for(let a=-2;a<=2;a++)s===-2||s===2||a===-2||a===2||s===0&&a===0?t.set(n+s,i+a,!0,!0):t.set(n+s,i+a,!1,!0)}}function es(t,e){let r=t.size,o=it.getEncodedBits(e),n,i,s;for(let a=0;a<18;a++)n=Math.floor(a/3),i=a%3+r-8-3,s=(o>>a&1)==1,t.set(n,i,s,!0),t.set(i,n,s,!0)}function zt(t,e,r){let o=t.size,n=Yi.getEncodedBits(e,r),i,s;for(i=0;i<15;i++)s=(n>>i&1)==1,i<6?t.set(i,8,s,!0):i<8?t.set(i+1,8,s,!0):t.set(o-15+i,8,s,!0),i<8?t.set(8,o-i-1,s,!0):i<9?t.set(8,15-i-1+1,s,!0):t.set(8,15-i-1,s,!0);t.set(o-8,8,1,!0)}function ts(t,e){let r=t.size,o=-1,n=r-1,i=7,s=0;for(let a=r-1;a>0;a-=2)for(a===6&&a--;;){for(let c=0;c<2;c++)if(!t.isReserved(n,a-c)){let l=!1;s<e.length&&(l=(e[s]>>>i&1)==1),t.set(n,a-c,l),i--,i===-1&&(s++,i=7)}if(n+=o,n<0||r<=n){n-=o,o=-o;break}}}function rs(t,e,r){let o=new Hi;r.forEach(function(c){o.put(c.mode.bit,4),o.put(c.getLength(),Gi.getCharCountIndicator(c.mode,t)),c.write(o)});let n=ot.getSymbolTotalCodewords(t),i=jt.getTotalCodewordsCount(t,e),s=(n-i)*8;for(o.getLengthInBits()+4<=s&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(0);let a=(s-o.getLengthInBits())/8;for(let c=0;c<a;c++)o.put(c%2?17:236,8);return ns(o,t,e)}function ns(t,e,r){let o=ot.getSymbolTotalCodewords(e),n=jt.getTotalCodewordsCount(e,r),i=o-n,s=jt.getBlocksCount(e,r),a=o%s,c=s-a,l=Math.floor(o/s),u=Math.floor(i/s),d=u+1,f=l-u,h=new Ji(f),b=0,A=new Array(s),j=new Array(s),R=0,O=new Uint8Array(t.buffer);for(let x=0;x<s;x++){let D=x<c?u:d;A[x]=O.slice(b,b+D),j[x]=h.encode(A[x]),b+=D,R=Math.max(R,D)}let V=new Uint8Array(o),M=0,L,N;for(L=0;L<R;L++)for(N=0;N<s;N++)L<A[N].length&&(V[M++]=A[N][L]);for(L=0;L<f;L++)for(N=0;N<s;N++)V[M++]=j[N][L];return V}function os(t,e,r,o){let n;if(Array.isArray(t))n=qt.fromArray(t);else if(typeof t=="string"){let l=e;if(!l){let u=qt.rawSplit(t);l=it.getBestVersionForData(u,r)}n=qt.fromString(t,l||40)}else throw new Error("Invalid data");let i=it.getBestVersionForData(n,r);if(!i)throw new Error("The amount of data is too big to be stored in a QR Code");if(!e)e=i;else if(e<i)throw new Error(`
 The chosen QR Code version cannot contain this amount of data.
 Minimum version required to store current data is: `+i+`.
-`);let s=Zi(e,r,n),a=rt.getSymbolSize(e),c=new ji(a);return Ki(c,e),Ji(c),Yi(c,e),qt(c,r,0),e>=7&&Gi(c,e),Qi(c,s),isNaN(o)&&(o=Dt.getBestMask(c,qt.bind(null,c,r))),Dt.applyMask(o,c),qt(c,r,o),{modules:c,version:e,errorCorrectionLevel:r,maskPattern:o,segments:n}}Bn.create=function(e,r){if(typeof e=="undefined"||e==="")throw new Error("No input text");let o=Ft.M,n,i;return typeof r!="undefined"&&(o=Ft.from(r.errorCorrectionLevel,Ft.M),n=nt.from(r.version),i=Dt.from(r.maskPattern),r.toSJISFunc&&rt.setToSJISFunction(r.toSJISFunc)),es(e,n,o,i)}});var zt=g(se=>{function kn(t){if(typeof t=="number"&&(t=t.toString()),typeof t!="string")throw new Error("Color should be defined as hex string");let e=t.slice().replace("#","").split("");if(e.length<3||e.length===5||e.length>8)throw new Error("Invalid hex color: "+t);(e.length===3||e.length===4)&&(e=Array.prototype.concat.apply([],e.map(function(o){return[o,o]}))),e.length===6&&e.push("F","F");let r=parseInt(e.join(""),16);return{r:r>>24&255,g:r>>16&255,b:r>>8&255,a:r&255,hex:"#"+e.slice(0,6).join("")}}se.getOptions=function(e){e||(e={}),e.color||(e.color={});let r=typeof e.margin=="undefined"||e.margin===null||e.margin<0?4:e.margin,o=e.width&&e.width>=21?e.width:void 0,n=e.scale||4;return{width:o,scale:o?4:n,margin:r,color:{dark:kn(e.color.dark||"#000000ff"),light:kn(e.color.light||"#ffffffff")},type:e.type,rendererOpts:e.rendererOpts||{}}};se.getScale=function(e,r){return r.width&&r.width>=e+r.margin*2?r.width/(e+r.margin*2):r.scale};se.getImageWidth=function(e,r){let o=se.getScale(e,r);return Math.floor((e+r.margin*2)*o)};se.qrToImageData=function(e,r,o){let n=r.modules.size,i=r.modules.data,s=se.getScale(n,o),a=Math.floor((n+o.margin*2)*s),c=o.margin*s,l=[o.color.light,o.color.dark];for(let u=0;u<a;u++)for(let p=0;p<a;p++){let d=(u*a+p)*4,m=o.color.light;if(u>=c&&p>=c&&u<a-c&&p<a-c){let C=Math.floor((u-c)/s),x=Math.floor((p-c)/s);m=l[i[C*n+x]?1:0]}e[d++]=m.r,e[d++]=m.g,e[d++]=m.b,e[d]=m.a}}});var On=g(ot=>{var Ht=zt();function ts(t,e,r){t.clearRect(0,0,e.width,e.height),e.style||(e.style={}),e.height=r,e.width=r,e.style.height=r+"px",e.style.width=r+"px"}function rs(){try{return document.createElement("canvas")}catch(t){throw new Error("You need to specify a canvas element")}}ot.render=function(e,r,o){let n=o,i=r;typeof n=="undefined"&&(!r||!r.getContext)&&(n=r,r=void 0),r||(i=rs()),n=Ht.getOptions(n);let s=Ht.getImageWidth(e.modules.size,n),a=i.getContext("2d"),c=a.createImageData(s,s);return Ht.qrToImageData(c.data,e,n),ts(a,i,s),a.putImageData(c,0,0),i};ot.renderToDataURL=function(e,r,o){let n=o;typeof n=="undefined"&&(!r||!r.getContext)&&(n=r,r=void 0),n||(n={});let i=ot.render(e,r,n),s=n.type||"image/png",a=n.rendererOpts||{};return i.toDataURL(s,a.quality)}});var Dn=g(Fn=>{var ns=zt();function Un(t,e){let r=t.a/255,o=e+'="'+t.hex+'"';return r<1?o+" "+e+'-opacity="'+r.toFixed(2).slice(1)+'"':o}function $t(t,e,r){let o=t+e;return typeof r!="undefined"&&(o+=" "+r),o}function os(t,e,r){let o="",n=0,i=!1,s=0;for(let a=0;a<t.length;a++){let c=Math.floor(a%e),l=Math.floor(a/e);!c&&!i&&(i=!0),t[a]?(s++,a>0&&c>0&&t[a-1]||(o+=i?$t("M",c+r,.5+l+r):$t("m",n,0),n=0,i=!1),c+1<e&&t[a+1]||(o+=$t("h",s),s=0)):n++}return o}Fn.render=function(e,r,o){let n=ns.getOptions(r),i=e.modules.size,s=e.modules.data,a=i+n.margin*2,c=n.color.light.a?"<path "+Un(n.color.light,"fill")+' d="M0 0h'+a+"v"+a+'H0z"/>':"",l="<path "+Un(n.color.dark,"stroke")+' d="'+os(s,i,n.margin)+'"/>',u='viewBox="0 0 '+a+" "+a+'"',p=n.width?'width="'+n.width+'" height="'+n.width+'" ':"",d='<svg xmlns="http://www.w3.org/2000/svg" '+p+u+' shape-rendering="crispEdges">'+c+l+`</svg>
-`;return typeof o=="function"&&o(null,d),d}});var jn=g(be=>{var is=Wr(),Vt=Rn(),Wn=On(),ss=Dn();function Kt(t,e,r,o,n){let i=[].slice.call(arguments,1),s=i.length,a=typeof i[s-1]=="function";if(!a&&!is())throw new Error("Callback required as last argument");if(a){if(s<2)throw new Error("Too few arguments provided");s===2?(n=r,r=e,e=o=void 0):s===3&&(e.getContext&&typeof n=="undefined"?(n=o,o=void 0):(n=o,o=r,r=e,e=void 0))}else{if(s<1)throw new Error("Too few arguments provided");return s===1?(r=e,e=o=void 0):s===2&&!e.getContext&&(o=r,r=e,e=void 0),new Promise(function(c,l){try{let u=Vt.create(r,o);c(t(u,e,o))}catch(u){l(u)}})}try{let c=Vt.create(r,o);n(null,t(c,e,o))}catch(c){n(c)}}be.create=Vt.create;be.toCanvas=Kt.bind(null,Wn.render);be.toDataURL=Kt.bind(null,Wn.renderToDataURL);be.toString=Kt.bind(null,function(t,e,r){return ss.render(t,r)})});Yt(exports);mo(exports,{EthosWrapper:()=>rr,SignInButton:()=>Jn,ethos:()=>Vs});var I=y(require("react"));var Gt=y(z()),wo=()=>Gt.default.namespace("ethos")("configuration")||{},v=wo;var ct=y(z());var Ae=y(z()),vo=t=>{let e=Ae.default.namespace("log"),r=e("allowed")||[];r.includes(t)||e("allowed",[...r,t])},So=()=>{Ae.default.namespace("log")("allowed",[])},Co=(t,...e)=>{let o=Ae.default.namespace("log")("allowed");!o||!(o.includes(t)||o.includes("all"))||console.log(t,...e)};typeof window!="undefined"&&(window.ethos={allowLog:vo,clearAllowLog:So});var h=Co;var bo=t=>{let{appId:e}=v();h("getIframe","getIframe",e);let r="ethos-wallet-iframe",o=0,n=document.getElementById(r),i=()=>{!n||(n.style.width="1px",n.style.height="1px")},{walletAppUrl:s}=v();if(!n){let a=new URLSearchParams(window.location.search),c=a.get("auth"),l=s+`/wallet?appId=${e}`;if(c){l+=`&auth=${c}`,a.delete("auth");let u=location.protocol+"//"+location.host+location.pathname;a.toString().length>0&&(u+="?"+a.toString()),ct.default.namespace("auth")("access_token",c),window.history.pushState({},"",u)}else{let u=ct.default.namespace("auth")("access_token");u&&(l+=`&auth=${u}`)}h("getIframe","Load Iframe",l),n=document.createElement("IFRAME"),n.src=l,n.id=r,n.style.border="none",n.style.position="absolute",n.style.top=o+"px",n.style.right="60px",n.style.width="1px",n.style.height="1px",n.style.zIndex="99",n.setAttribute("allow","payment; clipboard-read; clipboard-write"),document.body.appendChild(n),window.addEventListener("message",u=>{u.origin===s&&u.data.close&&i()}),window.addEventListener("scroll",()=>{o=window.scrollY,n.style.top=o+"px"})}return t?(n.style.width="360px",n.style.height="600px"):t!==void 0&&i(),n},U=bo;var xo=()=>{h("activeUser","Calling Active User");let{walletAppUrl:t,appId:e}=v(),r=o=>{var a;let n=c=>{if(h("activeUser","Message Origin: ",c.origin,t,c),c.origin===t){let{action:l,data:u}=c.data;h("MESSAGE2: ",l,u),l==="user"&&u.appId===e&&(window.removeEventListener("message",n),o(u==null?void 0:u.user))}};window.addEventListener("message",n);let i={action:"activeUser"},s=U();h('activeUser", "Post message to the iframe',i),(a=s==null?void 0:s.contentWindow)==null||a.postMessage(i,"*")};return new Promise(r)},Ie=xo;var ee;(function(e){e.Sui="sui"})(ee||(ee={}));var Eo=t=>t==="sui"?ee.Sui:ee.Sui,Qt=Eo;var Po=async t=>{let{network:e}=v(),r=Object(),o=await Ie(),n=Object(),i=new Proxy(n,{get:(s,a,c)=>{switch(a){case"ethos":return!0;case"email":return o.email;case"getAddress":return async()=>{var u;let l=Qt((t||e||"sui").toString());return(u=o.accounts.find(p=>p.chain===l))==null?void 0:u.address};default:return Reflect.get(s,a,c)}}});return new Proxy(r,{get:(s,a,c)=>{switch(a){case"ethos":return!0;case"getNetwork":return()=>t;case"getSigner":return()=>o?i:void 0;default:return Reflect.get(s,a,c)}}})},Te=Po;var Zt=y(z());var Ao=t=>{let e=Zt.default.namespace("ethos");h("initialize","Ethos Configuration",t),e("configuration",t)},_e=Ao;var Le=y(require("react")),Xt=y(z());var Io=()=>{let[t,e]=(0,Le.useState)(null),r=()=>window.suiWallet,o=s=>{h("useSuiWallet","initSignerAndProvider",s);let a=s?{extension:!0,getAddress:()=>s,transact:async l=>{try{return await r().executeMoveCall(i(l))}catch(u){console.log("Error with sui transaction",u)}}}:null,c={getSigner:a};h("useSuiWallet","SetProviderAndSigner",{provider:c,signer:a}),e({provider:c,signer:a,context:null})},n=async()=>{if(r())if(await r().hasPermissions()){let a=await r().getAccounts();a&&a.length>0&&(h("useSuiWallet","INIT SUI 1",a),o(a[0]))}else h("useSuiWallet","INIT SUI 2"),o(null);else h("useSuiWallet","INIT SUI 3"),o(null)};(0,Le.useEffect)(()=>{setTimeout(n,100);let s=a=>{if(a.type==="ethos-storage-changed"){let l=Xt.default.namespace("sui")("account");h("useSuiWallet","INIT SUI 4",l),o(l)}};return window.addEventListener("storage",s),window.addEventListener("ethos-storage-changed",s),()=>{window.removeEventListener("storage",s),window.removeEventListener("ethos-storage-changed",s)}},[]);let i=s=>({...s,packageObjectId:s.packageObjectId||s.address,module:s.module||s.moduleName,function:s.function||s.functionName,typeArguments:[],arguments:s.arguments||s.inputValues});return t},er=Io;var To=async()=>{let{walletAppUrl:t}=v();return new Promise((e,r)=>{let o=n=>{if(n.origin===t){let{action:i,data:s}=n.data;if(i!=="connect")return;s.address||e({provider:{}}),window.removeEventListener("message",o);let a={getAddress:()=>s.address},c={getSigner:a};console.log({provider:c,signer:a}),e({provider:c,signer:a})}};window.removeEventListener("message",o),window.addEventListener("message",o)})},Me=To;var tr=y(require("react")),_o={provider:null,signer:null,contents:null},Lo=(0,tr.createContext)(_o),Ne=Lo;var Mo=({ethosConfiguration:t,onWalletConnected:e,children:r})=>{t.chain||(t.chain=ee.Sui),t.network||(t.network="sui"),t.walletAppUrl||(t.walletAppUrl="https://ethoswallet.xyz/");let o=(0,I.useRef)({ethos:!1,mobile:!1,extension:!1});h("EthosWrapper","EthosWrapper Configuration:",t);let[n,i]=(0,I.useState)({provider:null,signer:null,contents:null}),s=er(),a=(0,I.useCallback)((l,u)=>{h("EthosWrapper","_onProviderSelected called with: ",u,l),o.current[u]=!0,!Object.values(o.current).includes(!1)&&(i(l),e&&e(l))},[]);(0,I.useEffect)(()=>{Me().then(l=>{h("EthosWrapper","Setting _onProviderSelected1"),a(l,"mobile")})},[]),(0,I.useEffect)(()=>{!s||(h("EthosWrapper","Setting _onProviderSelected2"),a(s,"extension"))},[s,a]),(0,I.useEffect)(()=>{_e(t),(async()=>{let u=await Te();h("EthosWrapper","Setting _onProviderSelected3"),a({provider:u,signer:u==null?void 0:u.getSigner(),contents:null},"ethos")})()},[]),(0,I.useEffect)(()=>{let l=async u=>{var p;if(u.origin===t.walletAppUrl){let{action:d,data:m}=u.data;if(d==="account"){let{account:C}=m,x=await((p=n.signer)==null?void 0:p.getAddress());C&&x&&x===C.address&&(h("EthosWrapper","Setting _onProviderSelected4"),a({...n,contents:C.contents},"ethos"))}}};return window.addEventListener("message",l),()=>window.removeEventListener("account",l)},[n]);let c=I.default.Children.map(r,l=>I.default.isValidElement(l)?I.default.cloneElement(l,{...n}):l);return I.default.createElement(Ne.Provider,{value:n},c)},rr=Mo;var X=y(require("react"));var J=y(require("react")),No=({width:t=100,color:e="#333"})=>J.default.createElement("svg",{version:"1.1",id:"L4",xmlns:"http://www.w3.org/2000/svg",x:"0px",y:"0px",viewBox:"0 0 54 20",width:t,height:t*(20/54),enableBackground:"new 0 0 0 0"},J.default.createElement("circle",{fill:e,stroke:"none",cx:"6",cy:"10",r:"6"},J.default.createElement("animate",{attributeName:"opacity",dur:"1.5s",values:"0;1;0",repeatCount:"indefinite",begin:"0.1"})),J.default.createElement("circle",{fill:e,stroke:"none",cx:"26",cy:"10",r:"6"},J.default.createElement("animate",{attributeName:"opacity",dur:"1.5s",values:"0;1;0",repeatCount:"indefinite",begin:"0.5"})),J.default.createElement("circle",{fill:e,stroke:"none",cx:"46",cy:"10",r:"6"},J.default.createElement("animate",{attributeName:"opacity",dur:"1.5s",values:"0;1;0",repeatCount:"indefinite",begin:"1.0"}))),Be=No;var ae=y(require("react")),Bo=t=>{let{children:e,onClick:r,isWorking:o,workingComponent:n,...i}=t;return ae.default.createElement("button",{onClick:r,...i},o?n||ae.default.createElement("span",{className:"block p-2"},ae.default.createElement(Be,{width:30})):ae.default.createElement(ae.default.Fragment,null,e))},nr=Bo;var f=y(require("react"));var or=y(z());var Ro=t=>{var r;let e=U();(r=e==null?void 0:e.contentWindow)==null||r.postMessage(t,"*")},N=Ro;var ko=async({email:t,provider:e,appId:r})=>{let{walletAppUrl:o}=v(),n=or.default.namespace("users");if(e){let i=location.href,s=`${o}/auth?appId=${r}&returnTo=${encodeURIComponent(i)}`;location.href=`${o}/socialauth?provider=${e}&redirectTo=${encodeURIComponent(s)}`;return}return new Promise((i,s)=>{let a=c=>{if(c.origin===o){let{action:l,data:u}=c.data;if(l!=="login")return;window.removeEventListener("message",a),console.log("LOGIN USER DATA",u),n("current",u),i(u)}};window.addEventListener("message",a),N({action:"login",data:{email:t,provider:e,returnTo:window.location.href,appId:r}})})},ge=ko;var Re=y(require("react")),Oo=({width:t=24,color:e="#1e293b"})=>Re.default.createElement("svg",{width:t,height:t*65/47,viewBox:"0 0 47 65",fill:"none",xmlns:"http://www.w3.org/2000/svg"},Re.default.createElement("path",{d:"M6.00471 1H40.0029C42.7644 1 45.0029 3.23858 45.0029 6V44.8425C45.0029 47.604 42.7643 49.8425 40.0029 49.8425H6.0047C3.24328 49.8425 1.0047 47.604 1.0047 44.8425V6C1.0047 3.23858 3.24329 1 6.00471 1Z",stroke:e,strokeWidth:"2"}),Re.default.createElement("path",{d:"M6.68764 3.64648L30.6631 14.8026C32.0736 15.4589 32.9756 16.8735 32.9756 18.4292V58.6799C32.9756 61.5743 29.9966 63.5105 27.3515 62.3353L3.37601 51.683C1.93126 51.0411 1.00013 49.6085 1.00013 48.0276V7.27309C1.00013 4.34854 4.03609 2.41268 6.68764 3.64648Z",fill:e})),ir=Oo;var te=y(require("react")),Uo=({width:t=24})=>te.default.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",width:t,height:t},te.default.createElement("g",{transform:"matrix(1, 0, 0, 1, 27.009001, -39.238998)"},te.default.createElement("path",{fill:"#4285F4",d:"M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"}),te.default.createElement("path",{fill:"#34A853",d:"M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"}),te.default.createElement("path",{fill:"#FBBC05",d:"M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z"}),te.default.createElement("path",{fill:"#EA4335",d:"M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z"}))),sr=Uo;var lt=y(require("react")),Fo=({width:t=24,color:e="#1B1F23"})=>lt.default.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",width:t,height:t,viewBox:"0 0 1024 1024",fill:"none"},lt.default.createElement("path",{fillRule:"evenodd",clipRule:"evenodd",d:"M8 0C3.58 0 0 3.58 0 8C0 11.54 2.29 14.53 5.47 15.59C5.87 15.66 6.02 15.42 6.02 15.21C6.02 15.02 6.01 14.39 6.01 13.72C4 14.09 3.48 13.23 3.32 12.78C3.23 12.55 2.84 11.84 2.5 11.65C2.22 11.5 1.82 11.13 2.49 11.12C3.12 11.11 3.57 11.7 3.72 11.94C4.44 13.15 5.59 12.81 6.05 12.6C6.12 12.08 6.33 11.73 6.56 11.53C4.78 11.33 2.92 10.64 2.92 7.58C2.92 6.71 3.23 5.99 3.74 5.43C3.66 5.23 3.38 4.41 3.82 3.31C3.82 3.31 4.49 3.1 6.02 4.13C6.66 3.95 7.34 3.86 8.02 3.86C8.7 3.86 9.38 3.95 10.02 4.13C11.55 3.09 12.22 3.31 12.22 3.31C12.66 4.41 12.38 5.23 12.3 5.43C12.81 5.99 13.12 6.7 13.12 7.58C13.12 10.65 11.25 11.33 9.47 11.53C9.76 11.78 10.01 12.26 10.01 13.01C10.01 14.08 10 14.94 10 15.21C10 15.42 10.15 15.67 10.55 15.59C13.71 14.53 16 11.53 16 8C16 3.58 12.42 0 8 0Z",transform:"scale(64)",fill:e})),ar=Fo;var ut=y(require("react")),Do=({width:t=24})=>ut.default.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",width:t,height:t,viewBox:"0 0 1024 1024",version:"1.1"},ut.default.createElement("path",{d:"M512 16C238.064 16 16 238.064 16 512s222.064 496 496 496 496-222.064 496-496S785.936 16 512 16zM307.488 346.672l409.008 0c5.184 0 10.064 1.232 14.464 3.296l-196.688 138.064c-17.104 17.12-27.696 17.12-44.8 0l-196.608-137.984C297.328 347.936 302.24 346.672 307.488 346.672zM750.816 652.192c0 18.96-15.36 34.336-34.304 34.336L307.488 686.528c-18.944 0-34.304-15.376-34.304-34.336L273.184 391.296c0-1.728 0.256-3.376 0.512-5.024l201.92 143.312c20.096 20.112 52.688 20.112 72.784 0l201.92-143.312c0.24 1.648 0.512 3.296 0.512 5.024L750.832 652.192z"})),cr=Do;var ft=y(require("react")),Wo=({width:t=24,color:e="#6EBCEE"})=>ft.default.createElement("svg",{id:"SuiSvg",xmlns:"http://www.w3.org/2000/svg",width:t,height:t*(40/28),viewBox:"-1 0 28 40"},ft.default.createElement("path",{d:"M1.8611,33.0541a13.6477,13.6477,0,0,0,23.7778,0,13.89,13.89,0,0,0,0-13.8909L15.1824.8368a1.6444,1.6444,0,0,0-2.8648,0L1.8611,19.1632A13.89,13.89,0,0,0,1.8611,33.0541ZM10.8044,9.5555,13.0338,5.648a.8222.8222,0,0,1,1.4324,0L23.043,20.68a10.8426,10.8426,0,0,1,.8873,8.8828,9.4254,9.4254,0,0,0-.4388-1.4586c-1.1847-3.0254-3.8634-5.36-7.9633-6.9393-2.8187-1.0819-4.618-2.6731-5.3491-4.73C9.2375,13.7848,10.221,10.8942,10.8044,9.5555ZM7.0028,16.2184,4.457,20.68a10.8569,10.8569,0,0,0,0,10.8582,10.6776,10.6776,0,0,0,16.1566,2.935,7.5061,7.5061,0,0,0,.0667-5.2913c-.87-2.1858-2.9646-3.9308-6.2252-5.1876-3.6857-1.4147-6.08-3.6233-7.1157-6.5625A9.297,9.297,0,0,1,7.0028,16.2184Z",style:{fill:e,fillRule:"evenodd"}})),lr=Wo;var dt=y(require("react")),jo=({width:t=24})=>dt.default.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",width:t,height:t,viewBox:"0 0 20 20",fill:"currentColor"},dt.default.createElement("path",{fillRule:"evenodd",d:"M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z",clipRule:"evenodd"})),ur=jo;var pt=y(require("react")),qo=({width:t=24,color:e="#1e293b"})=>pt.default.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",width:t,height:t*65/47,fill:"none",viewBox:"0 0 24 24",stroke:e,strokeWidth:2},pt.default.createElement("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M5 13l4 4L19 7"})),fr=qo;var ke=y(require("react"));function dr(){let{innerWidth:t,innerHeight:e}=window;return{width:t,height:e}}function gt(){let[t,e]=(0,ke.useState)(dr());return(0,ke.useEffect)(()=>{function r(){e(dr())}return window.addEventListener("resize",r),()=>window.removeEventListener("resize",r)},[]),t}var H;(function(n){n[n.sm=640]="sm",n[n.md=768]="md",n[n.lg=1024]="lg",n[n.xl=1280]="xl",n[n["2xl"]=1536]="2xl"})(H||(H={}));var pr=y(z());var zo=async()=>{if(typeof window=="undefined")return;let t=window.suiWallet;if(!t)return!1;try{let e=await t.hasPermissions();if(e||(e=await t.requestPermissions()),e){let r=await t.getAccounts();if(!r||r.length===0)return!1;let n=pr.default.namespace("sui")("account",r[0]),i=window.dispatchEvent(new Event("ethos-storage-changed"));h("connectSui","Dispatch event-storage-changed",n,i)}}catch(e){return console.log("Error connecting to Sui Wallet",e),!1}return!0},gr=zo;var Ho=async t=>{N({action:"event",data:t})},ht=Ho;var Ue=y(require("react")),R=y(mt());function yt(){return yt=Object.assign||function(t){for(var e=1;e<arguments.length;e++){var r=arguments[e];for(var o in r)Object.prototype.hasOwnProperty.call(r,o)&&(t[o]=r[o])}return t},yt.apply(this,arguments)}function Ko(t,e){if(t==null)return{};var r={},o=Object.keys(t),n,i;for(i=0;i<o.length;i++)n=o[i],!(e.indexOf(n)>=0)&&(r[n]=t[n]);return r}function Oe(t){if(t===void 0)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}function Jo(t,e){t.prototype=Object.create(e.prototype),t.prototype.constructor=t,t.__proto__=e}var ce=function(t){Jo(e,t);function e(){var o;return o=t.call(this)||this,o.handleExpired=o.handleExpired.bind(Oe(o)),o.handleErrored=o.handleErrored.bind(Oe(o)),o.handleChange=o.handleChange.bind(Oe(o)),o.handleRecaptchaRef=o.handleRecaptchaRef.bind(Oe(o)),o}var r=e.prototype;return r.getValue=function(){return this.props.grecaptcha&&this._widgetId!==void 0?this.props.grecaptcha.getResponse(this._widgetId):null},r.getWidgetId=function(){return this.props.grecaptcha&&this._widgetId!==void 0?this._widgetId:null},r.execute=function(){var n=this.props.grecaptcha;if(n&&this._widgetId!==void 0)return n.execute(this._widgetId);this._executeRequested=!0},r.executeAsync=function(){var n=this;return new Promise(function(i,s){n.executionResolve=i,n.executionReject=s,n.execute()})},r.reset=function(){this.props.grecaptcha&&this._widgetId!==void 0&&this.props.grecaptcha.reset(this._widgetId)},r.handleExpired=function(){this.props.onExpired?this.props.onExpired():this.handleChange(null)},r.handleErrored=function(){this.props.onErrored&&this.props.onErrored(),this.executionReject&&(this.executionReject(),delete this.executionResolve,delete this.executionReject)},r.handleChange=function(n){this.props.onChange&&this.props.onChange(n),this.executionResolve&&(this.executionResolve(n),delete this.executionReject,delete this.executionResolve)},r.explicitRender=function(){if(this.props.grecaptcha&&this.props.grecaptcha.render&&this._widgetId===void 0){var n=document.createElement("div");this._widgetId=this.props.grecaptcha.render(n,{sitekey:this.props.sitekey,callback:this.handleChange,theme:this.props.theme,type:this.props.type,tabindex:this.props.tabindex,"expired-callback":this.handleExpired,"error-callback":this.handleErrored,size:this.props.size,stoken:this.props.stoken,hl:this.props.hl,badge:this.props.badge}),this.captcha.appendChild(n)}this._executeRequested&&this.props.grecaptcha&&this._widgetId!==void 0&&(this._executeRequested=!1,this.execute())},r.componentDidMount=function(){this.explicitRender()},r.componentDidUpdate=function(){this.explicitRender()},r.componentWillUnmount=function(){this._widgetId!==void 0&&(this.delayOfCaptchaIframeRemoving(),this.reset())},r.delayOfCaptchaIframeRemoving=function(){var n=document.createElement("div");for(document.body.appendChild(n),n.style.display="none";this.captcha.firstChild;)n.appendChild(this.captcha.firstChild);setTimeout(function(){document.body.removeChild(n)},5e3)},r.handleRecaptchaRef=function(n){this.captcha=n},r.render=function(){var n=this.props,i=n.sitekey,s=n.onChange,a=n.theme,c=n.type,l=n.tabindex,u=n.onExpired,p=n.onErrored,d=n.size,m=n.stoken,C=n.grecaptcha,x=n.badge,j=n.hl,B=Ko(n,["sitekey","onChange","theme","type","tabindex","onExpired","onErrored","size","stoken","grecaptcha","badge","hl"]);return Ue.default.createElement("div",yt({},B,{ref:this.handleRecaptchaRef}))},e}(Ue.default.Component);ce.displayName="ReCAPTCHA";ce.propTypes={sitekey:R.default.string.isRequired,onChange:R.default.func,grecaptcha:R.default.object,theme:R.default.oneOf(["dark","light"]),type:R.default.oneOf(["image","audio"]),tabindex:R.default.number,onExpired:R.default.func,onErrored:R.default.func,size:R.default.oneOf(["compact","normal","invisible"]),stoken:R.default.string,hl:R.default.string,badge:R.default.oneOf(["bottomright","bottomleft","inline"])};ce.defaultProps={onChange:function(){},theme:"light",type:"image",tabindex:0,size:"normal",badge:"bottomright"};var re=y(require("react")),Br=y(mt()),Rr=y(Nr());function xt(){return xt=Object.assign||function(t){for(var e=1;e<arguments.length;e++){var r=arguments[e];for(var o in r)Object.prototype.hasOwnProperty.call(r,o)&&(t[o]=r[o])}return t},xt.apply(this,arguments)}function ai(t,e){if(t==null)return{};var r={},o=Object.keys(t),n,i;for(i=0;i<o.length;i++)n=o[i],!(e.indexOf(n)>=0)&&(r[n]=t[n]);return r}function ci(t,e){t.prototype=Object.create(e.prototype),t.prototype.constructor=t,t.__proto__=e}var W={},li=0;function Et(t,e){return e=e||{},function(o){var n=o.displayName||o.name||"Component",i=function(a){ci(c,a);function c(u,p){var d;return d=a.call(this,u,p)||this,d.state={},d.__scriptURL="",d}var l=c.prototype;return l.asyncScriptLoaderGetScriptLoaderID=function(){return this.__scriptLoaderID||(this.__scriptLoaderID="async-script-loader-"+li++),this.__scriptLoaderID},l.setupScriptURL=function(){return this.__scriptURL=typeof t=="function"?t():t,this.__scriptURL},l.asyncScriptLoaderHandleLoad=function(p){var d=this;this.setState(p,function(){return d.props.asyncScriptOnLoad&&d.props.asyncScriptOnLoad(d.state)})},l.asyncScriptLoaderTriggerOnScriptLoaded=function(){var p=W[this.__scriptURL];if(!p||!p.loaded)throw new Error("Script is not loaded.");for(var d in p.observers)p.observers[d](p);delete window[e.callbackName]},l.componentDidMount=function(){var p=this,d=this.setupScriptURL(),m=this.asyncScriptLoaderGetScriptLoaderID(),C=e,x=C.globalName,j=C.callbackName,B=C.scriptId;if(x&&typeof window[x]!="undefined"&&(W[d]={loaded:!0,observers:{}}),W[d]){var O=W[d];if(O&&(O.loaded||O.errored)){this.asyncScriptLoaderHandleLoad(O);return}O.observers[m]=function(E){return p.asyncScriptLoaderHandleLoad(E)};return}var V={};V[m]=function(E){return p.asyncScriptLoaderHandleLoad(E)},W[d]={loaded:!1,observers:V};var L=document.createElement("script");L.src=d,L.async=!0;for(var T in e.attributes)L.setAttribute(T,e.attributes[T]);B&&(L.id=B);var M=function(D){if(W[d]){var at=W[d],K=at.observers;for(var _ in K)D(K[_])&&delete K[_]}};j&&typeof window!="undefined"&&(window[j]=function(){return p.asyncScriptLoaderTriggerOnScriptLoaded()}),L.onload=function(){var E=W[d];E&&(E.loaded=!0,M(function(D){return j?!1:(D(E),!0)}))},L.onerror=function(){var E=W[d];E&&(E.errored=!0,M(function(D){return D(E),!0}))},document.body.appendChild(L)},l.componentWillUnmount=function(){var p=this.__scriptURL;if(e.removeOnUnmount===!0)for(var d=document.getElementsByTagName("script"),m=0;m<d.length;m+=1)d[m].src.indexOf(p)>-1&&d[m].parentNode&&d[m].parentNode.removeChild(d[m]);var C=W[p];C&&(delete C.observers[this.asyncScriptLoaderGetScriptLoaderID()],e.removeOnUnmount===!0&&delete W[p])},l.render=function(){var p=e.globalName,d=this.props,m=d.asyncScriptOnLoad,C=d.forwardedRef,x=ai(d,["asyncScriptOnLoad","forwardedRef"]);return p&&typeof window!="undefined"&&(x[p]=typeof window[p]!="undefined"?window[p]:void 0),x.ref=C,(0,re.createElement)(o,x)},c}(re.Component),s=(0,re.forwardRef)(function(a,c){return(0,re.createElement)(i,xt({},a,{forwardedRef:c}))});return s.displayName="AsyncScriptLoader("+n+")",s.propTypes={asyncScriptOnLoad:Br.default.func},(0,Rr.default)(s,o)}}var kr="onloadcallback",ui="grecaptcha";function fi(){return typeof window!="undefined"&&window.recaptchaOptions||{}}function di(){var t=fi(),e=t.useRecaptchaNet?"recaptcha.net":"www.google.com";return"https://"+e+"/recaptcha/api.js?onload="+kr+"&render=explicit"}var Or=Et(di,{callbackName:kr,globalName:ui})(ce);var Ur=Or;var cc=typeof window!="undefined"&&window.location.origin.indexOf("http://localhost")===0?"http://localhost:3000":"https://ethoswallet.onrender.com",Fr="6LcXUDshAAAAAPTZ3E7xi3-335IA9rncYVoey_ls";var qn=y(jn()),as=async t=>new Promise(e=>{qn.default.toDataURL(t,{width:300,margin:2,color:{dark:"#000",light:"#FFF"}},(r,o)=>{if(r)return console.error(r);e(o)})}),zn=as;var cs=async()=>{let{walletAppUrl:t}=v();return new Promise((e,r)=>{let o=n=>{if(n.origin===t){let{action:i,data:s}=n.data;if(i!=="connect")return;window.removeEventListener("message",o),e(s)}};window.addEventListener("message",o),N({action:"connect"})})},Hn=cs;var ls=({isOpen:t,onClose:e,socialLogin:r=[]})=>{let[o,n]=(0,f.useState)(!1),[i,s]=(0,f.useState)(!1),[a,c]=(0,f.useState)(""),[l,u]=(0,f.useState)(!1),{width:p}=gt(),{appId:d,walletAppUrl:m}=v(),C=(0,f.useRef)(null),[x,j]=(0,f.useState)(null),[B,O]=(0,f.useState)("email"),V=async()=>{if(s(!0),C&&C.current)try{await C.current.execute()}catch(_){console.log("CAPTCHA ERROR",_),L()}else L()},L=async()=>{await ge({email:a,appId:d}),c(""),s(!1),u(!0),ht({action:"send_email",category:"sign_in",label:a,value:1})},T=_=>{ge({provider:_,appId:d})},M=()=>{n(!1),O("ethos"),n(!0)},E=async()=>{n(!1),O("ethosMobile");let{connectionUrl:_}=await Hn(),lo=await zn(_);j(lo),await Me(),e&&e()},D=async()=>{n(!1),O("sui");let _=await gr();_?e&&e():n(!0),ht({action:"connect",category:"sign_in",label:"sui",value:_?1:0})},at=()=>{n(!1),j(null),O("email")},K=_=>{switch(_){case"ethos":return f.default.createElement(ir,{width:17});case"sui":return f.default.createElement(lr,{width:15});case"email":return f.default.createElement(cr,{width:21});default:return f.default.createElement(ur,{width:17})}};return f.default.createElement(f.default.Fragment,null,f.default.createElement("div",{style:fs(t),role:"dialog"},f.default.createElement("div",{style:ds(),onClick:()=>console.log("clicked")}),f.default.createElement(Ur,{sitekey:Fr,ref:C,size:"invisible",onChange:L}),f.default.createElement("div",{style:ps()},f.default.createElement("div",{style:gs(p)},f.default.createElement("div",{style:hs(p,l)},l?f.default.createElement("div",{style:{textAlign:"center",margin:"24px"}},f.default.createElement("div",{style:Ss()},f.default.createElement(fr,{color:"#16a34a"})),f.default.createElement("br",null),f.default.createElement("h3",{style:Jt()},"Check your email"),f.default.createElement("div",{style:us()},f.default.createElement("p",{style:{padding:"12px"}},"An email has been sent to you with a link to login."),f.default.createElement("p",null,"If you don't receive it, please check your spam folder or contact us at:"),f.default.createElement("p",{style:{justifyContent:"center",paddingTop:"12px"}},"support@ethoswallet.xyz"))):f.default.createElement(f.default.Fragment,null,f.default.createElement("div",{style:ys()},f.default.createElement("h3",{style:ws()},"Sign Up or Log In"),f.default.createElement("div",{style:ms(),onClick:e},"\u2715")),f.default.createElement("div",{style:vs(p)},f.default.createElement("div",{style:Cs(p)},f.default.createElement("div",{style:it(B==="email"),onClick:at},f.default.createElement("button",{style:st()},K("email"),"Email or Social Login")),f.default.createElement("div",{style:it(B==="ethos"),onClick:M},f.default.createElement("button",{style:st()},K("ethos"),"Ethos Wallet")),f.default.createElement("div",{style:it(B==="ethosMobile"),onClick:E},f.default.createElement("button",{style:st()},K("ethos"),"Ethos Wallet Mobile")),f.default.createElement("div",{style:it(B==="sui"),onClick:D},f.default.createElement("button",{style:st()},K("sui"),"Sui Test Wallet")),o&&f.default.createElement("div",{style:Ls()},"You do not have the necessary wallet extension installed.")),f.default.createElement("div",{style:xs(p)},x?f.default.createElement("div",{style:Es()},f.default.createElement("h3",{style:Ps()},"Connect Mobile Wallet"),f.default.createElement("p",{style:As()},"Scan the QR code with a mobile device."),f.default.createElement("div",null,f.default.createElement("img",{src:x}))):f.default.createElement(f.default.Fragment,null,(r||[]).length>0&&f.default.createElement("div",null,f.default.createElement("h3",{style:Jt()},"Sign up or log in with:"),f.default.createElement("div",{style:bs()},r.indexOf("google")>-1&&f.default.createElement("div",{style:$n(),onClick:()=>T("google")},f.default.createElement(sr,{width:36})),r.indexOf("github")>-1&&f.default.createElement("div",{style:$n(),onClick:()=>T("github")},f.default.createElement(ar,{width:36})))),f.default.createElement("h3",{style:Jt()},"Sign up or log in with a link"),i?f.default.createElement("div",{style:_s()},f.default.createElement(Be,{width:50})):f.default.createElement(f.default.Fragment,null,f.default.createElement("form",{onSubmit:V},f.default.createElement("input",{style:Is(),type:"email",placeholder:"Email address",value:a,onChange:_=>c(_.target.value)}),f.default.createElement("button",{style:Ts(p),type:"submit"},"Send")),f.default.createElement("div",{style:Ms()},"Advanced:\xA0",f.default.createElement("a",{href:`${m}/extensions`,style:Vn(),target:"_blank",rel:"noopener noreferrer"},"Chrome Extension"),"\xA0or\xA0",f.default.createElement("a",{href:`${m}/mobile`,style:Vn(),target:"_blank",rel:"noopener noreferrer"},"Mobile App"))))))))))))},us=()=>({color:"#6B7280",fontSize:"0.875rem",lineHeight:"1.25rem"}),fs=t=>({display:t?"block":"none",position:"relative",zIndex:"10"}),ds=()=>({position:"fixed",top:"0px",right:"0px",bottom:"0px",left:"0px",backgroundColor:"rgb(107 114 128 / .75)"}),ps=()=>({position:"fixed",zIndex:"99",top:"0px",right:"0px",bottom:"0px",left:"0px",overflowY:"auto"}),gs=t=>{let e={display:"flex",alignItems:"flex-end",justifyContent:"center",minHeight:"100%",padding:"1rem",textAlign:"center"},r={padding:"0",alignItems:"center"};return t<H.sm?e:{...e,...r}},hs=(t,e)=>{let r={overflow:"hidden",position:"relative",backgroundColor:"#ffffff",transitionProperty:"all",textAlign:"left",borderRadius:"0.5rem",boxShadow:"0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"},o={marginTop:"2rem",marginBottom:"2rem",width:"100%",maxWidth:e?"28rem":"40rem"};return t<H.sm?r:{...r,...o}},ms=()=>({backgroundColor:"#F9FAFB",borderRadius:"100%",width:"24px",height:"24px",textAlign:"center",color:"#A0AEBA",cursor:"pointer"}),ys=()=>({borderBottom:"1px solid rgb(241 245 249)",padding:"12px",display:"flex",justifyContent:"space-between"}),ws=()=>({fontSize:"1rem",fontWeight:"500",margin:"0"}),vs=t=>{let e={justifyContent:"space-between"},r={display:"flex"};return t<H.sm?e:{...e,...r}},Ss=()=>({display:"flex",margin:"auto",backgroundColor:"#D1FAE5",justifyContent:"center",alignItems:"center",width:"3rem",height:"3rem",borderRadius:"9999px"}),Cs=t=>{let e={padding:"18px",gap:"6px",display:"flex",flexDirection:"column",borderBottom:"1px solid rgb(241 245 249)"},r={width:"300px",padding:"24px 12px",borderRight:"1px solid rgb(241 245 249)"};return t<H.sm?e:{...e,...r}},it=(t=!1)=>({padding:"12px",backgroundColor:t?"#F3E8FE":"#F9FAFB",borderRadius:"0.5rem",fontWeight:"500",cursor:"pointer"}),st=()=>({display:"flex",alignItems:"center",justifyContent:"start",gap:"0.5rem",border:"none",background:"none",textDecoration:"none"}),bs=()=>({padding:"12px 0",display:"flex",gap:"6px"}),$n=()=>({cursor:"pointer"}),xs=t=>{let e={padding:"18px",display:"flex",flexDirection:"column",gap:"12px",flexGrow:"1"},r={padding:"24px"};return t<H.sm?e:{...e,...r}},Es=()=>({display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}),Jt=()=>({fontWeight:"500",margin:"0"}),Ps=()=>({fontWeight:"500",margin:"0",textAlign:"center"}),As=()=>({margin:"6px 0",fontSize:"smaller",textAlign:"center"}),Is=()=>({border:"1px solid rgb(203 213 225)",borderRadius:"0.5rem",padding:"12px",width:"90%"}),Ts=t=>{let e={marginTop:"0.5rem",border:"1px solid rgb(203 213 225)",borderRadius:"0.5rem",padding:"6px",backgroundColor:"#761AC7",color:"#FFFFFF",textDecoration:"none",minWidth:"6rem"},r={marginTop:"1rem"};return t<H.sm?e:{...e,...r}},_s=()=>({display:"flex",justifyContent:"center",padding:"45px 0"}),Ls=()=>({fontSize:"small",textAlign:"center",paddingTop:"6px"}),Ms=()=>({paddingTop:"6px",fontSize:"small",paddingLeft:"3px"}),Vn=()=>({color:"#751ac7",textDecoration:"underline",fontWeight:400}),Kn=ls;var Ns=t=>{let{children:e,socialLogin:r,onClick:o,...n}=t,[i,s]=X.default.useState(!1);return X.default.createElement(X.default.Fragment,null,X.default.createElement(Kn,{socialLogin:r,isOpen:i,onClose:()=>{var l;(l=document.getElementsByTagName("html").item(0))==null||l.setAttribute("style",""),s(!1)}}),X.default.createElement(nr,{onClick:l=>{var u;s(!0),(u=document.getElementsByTagName("html").item(0))==null||u.setAttribute("style","overflow: hidden;"),o&&o(l)},...n},e||X.default.createElement(X.default.Fragment,null,"Sign In")))},Jn=Ns;var Yn=y(z());var Bs=async(t=!1)=>{let{walletAppUrl:e}=v();return Yn.default.namespace("auth")("access_token",null),new Promise(r=>{window.addEventListener("message",o=>{if(h("logout","Message origin: ",o.origin,e,o),o.origin===e){let{action:n,data:i}=o.data;h("logout","message2",n,i),n==="user"&&r(i==null?void 0:i.user)}}),N({action:"logout",data:{wallet:t}})})},Gn=Bs;var Rs=async({signData:t,onComplete:e})=>{let{walletAppUrl:r}=v(),o=n=>{if(n.origin===r){let{action:i,data:s}=n.data;if(i!=="sign")return;let{state:a,response:c}=s;switch(a){case"complete":e&&e(c),window.removeEventListener("message",o);break;default:break}}};window.addEventListener("message",o),N({action:"sign",data:{signData:t}}),U(!0)},Qn=Rs;var ks=async({relativePath:t,method:e="GET",body:r})=>{let{walletAppUrl:o}=v(),n={method:e,headers:{"Content-Type":"application/json",Accept:"application/json"}};r&&(n.body=JSON.stringify(r));let i=await fetch(`${o}/api/${t}`,n),s=await i.json(),{status:a}=i;return{json:s,status:a}},q=ks;var Os=async({signer:t,details:e,onSigned:r,onSent:o,onComplete:n,onConfirmed:i,onCanceled:s})=>{if(console.log("TRANSACT",t,e),t.extension){let l=t.transact(e);n&&n(l);return}let{walletAppUrl:a}=v(),c=l=>{if(l.origin===a){let{action:u,data:p}=l.data;if(u!=="transact")return;let{state:d,response:m}=p;switch(d){case"signed":r&&r(m);break;case"sent":o&&o(m);break;case"complete":n&&n(m),window.removeEventListener("message",c);break;case"confirmed":i&&i(m),window.removeEventListener("message",c);break;case"canceled":s&&s(),window.removeEventListener("message",c);break;default:break}}};window.addEventListener("message",c),console.log("POST TRANSACTION",e),N({action:"transact",data:{details:e}}),U(!0)},Zn=Os;var Us=async t=>{let{network:e,chain:r}=v(),{json:{balance:o}}=await q({relativePath:"wallet/balance",method:"POST",body:{network:e,address:t,chain:r}});return o},Xn=Us;var Fs=async t=>{let{chain:e}=v(),{json:{nfts:r},status:o}=await q({relativePath:`nfts/${t}?chain=${e}`});return o!==200?(h("walletNfts","Error with wallet NFTs",o),[]):r},eo=Fs;var Ds=async(t,e)=>{let{json:{balance:r,nfts:o},status:n}=await q({relativePath:"wallet/contents",method:"POST",body:{chain:e,address:t}});if(n!==200){h("walletContents","Error with wallet contents",n);return}return{balance:r,nfts:o}},to=Ds;var Ws=async({network:t,walletAddress:e,contractAddress:r,contractABI:o})=>{let{json:{transferInformation:n}}=await q({relativePath:"contracts/transfers",method:"POST",body:{network:t,walletAddress:e,contractAddress:r,contractABI:o}});return n},ro=Ws;var js=async({network:t,contractAddress:e,contractABI:r,functionName:o,inputValues:n})=>{let{json:{response:i}}=await q({relativePath:"contracts/query",method:"POST",body:{network:t,address:e,abi:r,functionName:o,inputValues:n}});return i},no=js;var qs=()=>{U(!0)},oo=qs;var zs=()=>{U(!1)},io=zs;var Hs=async({address:t})=>{let{walletAppUrl:e}=v();return new Promise((r,o)=>{let n=i=>{if(i.origin===e){let{action:s,data:a}=i.data;if(s!=="drip")return;window.removeEventListener("message",n),console.log("DATA",a),r(a)}};window.addEventListener("message",n),N({action:"drip",data:{address:t}})})},so=Hs;var ao=y(require("react"));var $s=()=>(0,ao.useContext)(Ne),co=$s;var Vs={initialize:_e,login:ge,logout:Gn,sign:Qn,transact:Zn,getWalletBalance:Xn,getWalletNfts:eo,getWalletContents:to,activeUser:Ie,tokenTransfers:ro,query:no,showWallet:oo,hideWallet:io,getProvider:Te,dripSui:so,useProviderAndSigner:co};
+`);let s=rs(e,r,n),a=ot.getSymbolSize(e),c=new $i(a);return Qi(c,e),Zi(c),Xi(c,e),zt(c,r,0),e>=7&&es(c,e),ts(c,s),isNaN(o)&&(o=Wt.getBestMask(c,zt.bind(null,c,r))),Wt.applyMask(o,c),zt(c,r,o),{modules:c,version:e,errorCorrectionLevel:r,maskPattern:o,segments:n}}Fn.create=function(e,r){if(typeof e=="undefined"||e==="")throw new Error("No input text");let o=Dt.M,n,i;return typeof r!="undefined"&&(o=Dt.from(r.errorCorrectionLevel,Dt.M),n=it.from(r.version),i=Wt.from(r.maskPattern),r.toSJISFunc&&ot.setToSJISFunction(r.toSJISFunc)),os(e,n,o,i)}});var Ht=g(se=>{function Un(t){if(typeof t=="number"&&(t=t.toString()),typeof t!="string")throw new Error("Color should be defined as hex string");let e=t.slice().replace("#","").split("");if(e.length<3||e.length===5||e.length>8)throw new Error("Invalid hex color: "+t);(e.length===3||e.length===4)&&(e=Array.prototype.concat.apply([],e.map(function(o){return[o,o]}))),e.length===6&&e.push("F","F");let r=parseInt(e.join(""),16);return{r:r>>24&255,g:r>>16&255,b:r>>8&255,a:r&255,hex:"#"+e.slice(0,6).join("")}}se.getOptions=function(e){e||(e={}),e.color||(e.color={});let r=typeof e.margin=="undefined"||e.margin===null||e.margin<0?4:e.margin,o=e.width&&e.width>=21?e.width:void 0,n=e.scale||4;return{width:o,scale:o?4:n,margin:r,color:{dark:Un(e.color.dark||"#000000ff"),light:Un(e.color.light||"#ffffffff")},type:e.type,rendererOpts:e.rendererOpts||{}}};se.getScale=function(e,r){return r.width&&r.width>=e+r.margin*2?r.width/(e+r.margin*2):r.scale};se.getImageWidth=function(e,r){let o=se.getScale(e,r);return Math.floor((e+r.margin*2)*o)};se.qrToImageData=function(e,r,o){let n=r.modules.size,i=r.modules.data,s=se.getScale(n,o),a=Math.floor((n+o.margin*2)*s),c=o.margin*s,l=[o.color.light,o.color.dark];for(let u=0;u<a;u++)for(let d=0;d<a;d++){let f=(u*a+d)*4,h=o.color.light;if(u>=c&&d>=c&&u<a-c&&d<a-c){let b=Math.floor((u-c)/s),A=Math.floor((d-c)/s);h=l[i[b*n+A]?1:0]}e[f++]=h.r,e[f++]=h.g,e[f++]=h.b,e[f]=h.a}}});var Dn=g(st=>{var $t=Ht();function is(t,e,r){t.clearRect(0,0,e.width,e.height),e.style||(e.style={}),e.height=r,e.width=r,e.style.height=r+"px",e.style.width=r+"px"}function ss(){try{return document.createElement("canvas")}catch(t){throw new Error("You need to specify a canvas element")}}st.render=function(e,r,o){let n=o,i=r;typeof n=="undefined"&&(!r||!r.getContext)&&(n=r,r=void 0),r||(i=ss()),n=$t.getOptions(n);let s=$t.getImageWidth(e.modules.size,n),a=i.getContext("2d"),c=a.createImageData(s,s);return $t.qrToImageData(c.data,e,n),is(a,i,s),a.putImageData(c,0,0),i};st.renderToDataURL=function(e,r,o){let n=o;typeof n=="undefined"&&(!r||!r.getContext)&&(n=r,r=void 0),n||(n={});let i=st.render(e,r,n),s=n.type||"image/png",a=n.rendererOpts||{};return i.toDataURL(s,a.quality)}});var qn=g(jn=>{var as=Ht();function Wn(t,e){let r=t.a/255,o=e+'="'+t.hex+'"';return r<1?o+" "+e+'-opacity="'+r.toFixed(2).slice(1)+'"':o}function Vt(t,e,r){let o=t+e;return typeof r!="undefined"&&(o+=" "+r),o}function cs(t,e,r){let o="",n=0,i=!1,s=0;for(let a=0;a<t.length;a++){let c=Math.floor(a%e),l=Math.floor(a/e);!c&&!i&&(i=!0),t[a]?(s++,a>0&&c>0&&t[a-1]||(o+=i?Vt("M",c+r,.5+l+r):Vt("m",n,0),n=0,i=!1),c+1<e&&t[a+1]||(o+=Vt("h",s),s=0)):n++}return o}jn.render=function(e,r,o){let n=as.getOptions(r),i=e.modules.size,s=e.modules.data,a=i+n.margin*2,c=n.color.light.a?"<path "+Wn(n.color.light,"fill")+' d="M0 0h'+a+"v"+a+'H0z"/>':"",l="<path "+Wn(n.color.dark,"stroke")+' d="'+cs(s,i,n.margin)+'"/>',u='viewBox="0 0 '+a+" "+a+'"',d=n.width?'width="'+n.width+'" height="'+n.width+'" ':"",f='<svg xmlns="http://www.w3.org/2000/svg" '+d+u+' shape-rendering="crispEdges">'+c+l+`</svg>
+`;return typeof o=="function"&&o(null,f),f}});var Hn=g(be=>{var ls=zr(),Kt=On(),zn=Dn(),us=qn();function Jt(t,e,r,o,n){let i=[].slice.call(arguments,1),s=i.length,a=typeof i[s-1]=="function";if(!a&&!ls())throw new Error("Callback required as last argument");if(a){if(s<2)throw new Error("Too few arguments provided");s===2?(n=r,r=e,e=o=void 0):s===3&&(e.getContext&&typeof n=="undefined"?(n=o,o=void 0):(n=o,o=r,r=e,e=void 0))}else{if(s<1)throw new Error("Too few arguments provided");return s===1?(r=e,e=o=void 0):s===2&&!e.getContext&&(o=r,r=e,e=void 0),new Promise(function(c,l){try{let u=Kt.create(r,o);c(t(u,e,o))}catch(u){l(u)}})}try{let c=Kt.create(r,o);n(null,t(c,e,o))}catch(c){n(c)}}be.create=Kt.create;be.toCanvas=Jt.bind(null,zn.render);be.toDataURL=Jt.bind(null,zn.renderToDataURL);be.toString=Jt.bind(null,function(t,e,r){return us.render(t,r)})});Gt(exports);vo(exports,{EthosWrapper:()=>ir,SignInButton:()=>Qn,ethos:()=>Gs});var I=y(require("react"));var Qt=y(q()),So=()=>Qt.default.namespace("ethos")("configuration")||{},w=So;var Ie=y(q());var Ae=y(q()),bo=t=>{let e=Ae.default.namespace("log"),r=e("allowed")||[];r.includes(t)||e("allowed",[...r,t])},xo=()=>{Ae.default.namespace("log")("allowed",[])},Eo=(t,...e)=>{let o=Ae.default.namespace("log")("allowed");!o||!(o.includes(t)||o.includes("all"))||console.log(t,...e)};typeof window!="undefined"&&(window.ethos={allowLog:bo,clearAllowLog:xo});var m=Eo;var Zt=y(q());var Po=t=>{var r;let e=B();if(!(e==null?void 0:e.getAttribute("readyToReceiveMessages"))){let o=Zt.default.namespace("iframeMessages"),n=o("messages")||[],i=o("messages",[...n,t]);m("Storing iframe message",i);return}(r=e==null?void 0:e.contentWindow)==null||r.postMessage(t,"*")},E=Po;var Ao=t=>{let{appId:e}=w();m("getIframe","getIframe",e);let r="ethos-wallet-iframe",o=0,n=document.getElementById(r),i=()=>{!n||(n.style.width="1px",n.style.height="1px")},{walletAppUrl:s}=w();if(!n){let a=new URLSearchParams(window.location.search),c=a.get("auth"),l=s+`/wallet?appId=${e}`;if(c){l+=`&auth=${c}`,a.delete("auth");let u=location.protocol+"//"+location.host+location.pathname;a.toString().length>0&&(u+="?"+a.toString()),Ie.default.namespace("auth")("access_token",c),window.history.pushState({},"",u)}else{let u=Ie.default.namespace("auth")("access_token");u&&(l+=`&auth=${u}`)}m("getIframe","Load Iframe",l),n=document.createElement("IFRAME"),n.src=l,n.id=r,n.style.border="none",n.style.position="absolute",n.style.top=o+"px",n.style.right="60px",n.style.width="1px",n.style.height="1px",n.style.zIndex="99",n.setAttribute("allow","payment; clipboard-read; clipboard-write"),document.body.appendChild(n),window.addEventListener("message",u=>{if(u.origin===s){let{action:d}=u.data;switch(d){case"close":i();break;case"ready":n.setAttribute("readyToReceiveMessages","true");let f=Ie.default.namespace("iframeMessages"),h=f("messages")||[];for(let b of h)E(b);f("messages",null);break}}}),window.addEventListener("scroll",()=>{o=window.scrollY,n.style.top=o+"px"})}return t?(n.style.width="360px",n.style.height="600px"):t!==void 0&&i(),n},B=Ao;var Io=()=>{m("activeUser","Calling Active User");let{walletAppUrl:t,appId:e}=w(),r=o=>{let n=s=>{if(m("activeUser","Message Origin: ",s.origin,t,s),s.origin===t){let{action:a,data:c}=s.data;m("MESSAGE2: ",a,c),a==="user"&&c.appId===e&&(window.removeEventListener("message",n),o(c==null?void 0:c.user))}};window.addEventListener("message",n);let i={action:"activeUser"};B(),m('activeUser", "Post message to the iframe',i),E(i)};return new Promise(r)},Te=Io;var ee;(function(e){e.Sui="sui"})(ee||(ee={}));var To=t=>t==="sui"?ee.Sui:ee.Sui,Xt=To;var Lo=async t=>{let{network:e}=w(),r=Object(),o=await Te(),n=Object(),i=new Proxy(n,{get:(s,a,c)=>{switch(a){case"ethos":return!0;case"email":return o.email;case"getAddress":return async()=>{var u;let l=Xt((t||e||"sui").toString());return(u=o.accounts.find(d=>d.chain===l))==null?void 0:u.address};default:return Reflect.get(s,a,c)}}});return new Proxy(r,{get:(s,a,c)=>{switch(a){case"ethos":return!0;case"getNetwork":return()=>t;case"getSigner":return()=>o?i:void 0;default:return Reflect.get(s,a,c)}}})},Le=Lo;var er=y(q());var _o=t=>{let e=er.default.namespace("ethos");m("initialize","Ethos Configuration",t),e("configuration",t)},_e=_o;var Me=y(require("react")),tr=y(q());var Mo=()=>{let[t,e]=(0,Me.useState)(null),r=()=>window.suiWallet,o=s=>{m("useSuiWallet","initSignerAndProvider",s);let a=s?{extension:!0,getAddress:()=>s,transact:async l=>{try{return await r().executeMoveCall(i(l))}catch(u){console.log("Error with sui transaction",u)}}}:null,c={getSigner:a};m("useSuiWallet","SetProviderAndSigner",{provider:c,signer:a}),e({provider:c,signer:a,contents:null})},n=async()=>{if(r())if(await r().hasPermissions()){let a=await r().getAccounts();a&&a.length>0&&(m("useSuiWallet","INIT SUI 1",a),o(a[0]))}else m("useSuiWallet","INIT SUI 2"),o(null);else m("useSuiWallet","INIT SUI 3"),o(null)};(0,Me.useEffect)(()=>{setTimeout(n,100);let s=a=>{if(a.type==="ethos-storage-changed"){let l=tr.default.namespace("sui")("account");m("useSuiWallet","INIT SUI 4",l),o(l)}};return window.addEventListener("storage",s),window.addEventListener("ethos-storage-changed",s),()=>{window.removeEventListener("storage",s),window.removeEventListener("ethos-storage-changed",s)}},[]);let i=s=>({...s,packageObjectId:s.packageObjectId||s.address,module:s.module||s.moduleName,function:s.function||s.functionName,typeArguments:s.typeArguments||[],arguments:s.arguments||s.inputValues});return t},rr=Mo;var No=async()=>{let{walletAppUrl:t}=w();return new Promise((e,r)=>{let o=n=>{if(n.origin===t){let{action:i,data:s}=n.data;if(i!=="connect")return;if(window.removeEventListener("message",o),!s.address){e({provider:{}});return}let a={getAddress:()=>s.address},c={getSigner:a};console.log({provider:c,signer:a}),e({provider:c,signer:a})}};window.removeEventListener("message",o),window.addEventListener("message",o)})},Ne=No;var nr=y(require("react")),Bo={provider:null,signer:null,contents:null},Ro=(0,nr.createContext)(Bo),Be=Ro;var Re=y(require("react"));var ko=t=>{let[e,r]=(0,Re.useState)(null);return(0,Re.useEffect)(()=>{if(!t.signer)return;let{walletAppUrl:o}=w(),n;return(async()=>{var c;let s=await((c=t.signer)==null?void 0:c.getAddress());n=async l=>{if(l.origin===o){let{action:u,data:d}=l.data;if(u==="account"){let{account:f}=d;console.log("ACOCUNT UPDATE RECEIVED",f),f&&s&&s===f.address&&r(f)}}},window.addEventListener("message",n);let a={action:"account",data:{address:s}};B(),E(a)})(),()=>{n&&window.removeEventListener("account",n)}},[t]),e},or=ko;var Fo=({ethosConfiguration:t,onWalletConnected:e,children:r})=>{t.chain||(t.chain=ee.Sui),t.network||(t.network="sui"),t.walletAppUrl||(t.walletAppUrl="https://ethoswallet.xyz/");let o=(0,I.useRef)(!1),n=(0,I.useRef)({ethos:!1,mobile:!1,extension:!1});m("EthosWrapper","EthosWrapper Configuration:",t);let[i,s]=(0,I.useState)({provider:null,signer:null,contents:null}),a=rr(),c=or(i),l=(0,I.useCallback)((d,f)=>{if(o.current)return;f&&(n.current[f]=!0);let h=!Object.values(n.current).includes(!1);!d.signer&&!h||(d.signer&&(o.current=!0),s(d),e&&e(d))},[]);(0,I.useEffect)(()=>{_e(t)},[]),(0,I.useEffect)(()=>{Ne().then(d=>{m("EthosWrapper","Setting _onProviderSelected1"),l(d,"mobile")})},[]),(0,I.useEffect)(()=>{!a||(m("EthosWrapper","Setting _onProviderSelected2"),l(a,"extension"))},[a,l]),(0,I.useEffect)(()=>{(async()=>{let f=await Le();m("EthosWrapper","Setting _onProviderSelected3"),l({provider:f,signer:f==null?void 0:f.getSigner(),contents:null},"ethos")})()},[]),(0,I.useEffect)(()=>{!c||s(d=>({...d,contents:c.contents}))},[c]);let u=I.default.Children.map(r,d=>I.default.isValidElement(d)?I.default.cloneElement(d,{...i}):d);return I.default.createElement(Be.Provider,{value:i},u)},ir=Fo;var X=y(require("react"));var J=y(require("react")),Oo=({width:t=100,color:e="#333"})=>J.default.createElement("svg",{version:"1.1",id:"L4",xmlns:"http://www.w3.org/2000/svg",x:"0px",y:"0px",viewBox:"0 0 54 20",width:t,height:t*(20/54),enableBackground:"new 0 0 0 0"},J.default.createElement("circle",{fill:e,stroke:"none",cx:"6",cy:"10",r:"6"},J.default.createElement("animate",{attributeName:"opacity",dur:"1.5s",values:"0;1;0",repeatCount:"indefinite",begin:"0.1"})),J.default.createElement("circle",{fill:e,stroke:"none",cx:"26",cy:"10",r:"6"},J.default.createElement("animate",{attributeName:"opacity",dur:"1.5s",values:"0;1;0",repeatCount:"indefinite",begin:"0.5"})),J.default.createElement("circle",{fill:e,stroke:"none",cx:"46",cy:"10",r:"6"},J.default.createElement("animate",{attributeName:"opacity",dur:"1.5s",values:"0;1;0",repeatCount:"indefinite",begin:"1.0"}))),ke=Oo;var ae=y(require("react")),Uo=t=>{let{children:e,onClick:r,isWorking:o,workingComponent:n,...i}=t;return ae.default.createElement("button",{onClick:r,...i},o?n||ae.default.createElement("span",{className:"block p-2"},ae.default.createElement(ke,{width:30})):ae.default.createElement(ae.default.Fragment,null,e))},sr=Uo;var p=y(require("react"));var ar=y(q());var Do=async({email:t,provider:e,appId:r})=>{let{walletAppUrl:o}=w(),n=ar.default.namespace("users");if(e){let i=location.href,s=`${o}/auth?appId=${r}&returnTo=${encodeURIComponent(i)}`;location.href=`${o}/socialauth?provider=${e}&redirectTo=${encodeURIComponent(s)}`;return}return new Promise((i,s)=>{let a=c=>{if(c.origin===o){let{action:l,data:u}=c.data;if(l!=="login")return;window.removeEventListener("message",a),n("current",u),i(u)}};window.addEventListener("message",a),E({action:"login",data:{email:t,provider:e,returnTo:window.location.href,appId:r}})})},ge=Do;var Fe=y(require("react")),Wo=({width:t=24,color:e="#1e293b"})=>Fe.default.createElement("svg",{width:t,height:t*65/47,viewBox:"0 0 47 65",fill:"none",xmlns:"http://www.w3.org/2000/svg"},Fe.default.createElement("path",{d:"M6.00471 1H40.0029C42.7644 1 45.0029 3.23858 45.0029 6V44.8425C45.0029 47.604 42.7643 49.8425 40.0029 49.8425H6.0047C3.24328 49.8425 1.0047 47.604 1.0047 44.8425V6C1.0047 3.23858 3.24329 1 6.00471 1Z",stroke:e,strokeWidth:"2"}),Fe.default.createElement("path",{d:"M6.68764 3.64648L30.6631 14.8026C32.0736 15.4589 32.9756 16.8735 32.9756 18.4292V58.6799C32.9756 61.5743 29.9966 63.5105 27.3515 62.3353L3.37601 51.683C1.93126 51.0411 1.00013 49.6085 1.00013 48.0276V7.27309C1.00013 4.34854 4.03609 2.41268 6.68764 3.64648Z",fill:e})),cr=Wo;var te=y(require("react")),jo=({width:t=24})=>te.default.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",width:t,height:t},te.default.createElement("g",{transform:"matrix(1, 0, 0, 1, 27.009001, -39.238998)"},te.default.createElement("path",{fill:"#4285F4",d:"M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"}),te.default.createElement("path",{fill:"#34A853",d:"M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"}),te.default.createElement("path",{fill:"#FBBC05",d:"M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z"}),te.default.createElement("path",{fill:"#EA4335",d:"M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z"}))),lr=jo;var ut=y(require("react")),qo=({width:t=24,color:e="#1B1F23"})=>ut.default.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",width:t,height:t,viewBox:"0 0 1024 1024",fill:"none"},ut.default.createElement("path",{fillRule:"evenodd",clipRule:"evenodd",d:"M8 0C3.58 0 0 3.58 0 8C0 11.54 2.29 14.53 5.47 15.59C5.87 15.66 6.02 15.42 6.02 15.21C6.02 15.02 6.01 14.39 6.01 13.72C4 14.09 3.48 13.23 3.32 12.78C3.23 12.55 2.84 11.84 2.5 11.65C2.22 11.5 1.82 11.13 2.49 11.12C3.12 11.11 3.57 11.7 3.72 11.94C4.44 13.15 5.59 12.81 6.05 12.6C6.12 12.08 6.33 11.73 6.56 11.53C4.78 11.33 2.92 10.64 2.92 7.58C2.92 6.71 3.23 5.99 3.74 5.43C3.66 5.23 3.38 4.41 3.82 3.31C3.82 3.31 4.49 3.1 6.02 4.13C6.66 3.95 7.34 3.86 8.02 3.86C8.7 3.86 9.38 3.95 10.02 4.13C11.55 3.09 12.22 3.31 12.22 3.31C12.66 4.41 12.38 5.23 12.3 5.43C12.81 5.99 13.12 6.7 13.12 7.58C13.12 10.65 11.25 11.33 9.47 11.53C9.76 11.78 10.01 12.26 10.01 13.01C10.01 14.08 10 14.94 10 15.21C10 15.42 10.15 15.67 10.55 15.59C13.71 14.53 16 11.53 16 8C16 3.58 12.42 0 8 0Z",transform:"scale(64)",fill:e})),ur=qo;var ft=y(require("react")),zo=({width:t=24})=>ft.default.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",width:t,height:t,viewBox:"0 0 1024 1024",version:"1.1"},ft.default.createElement("path",{d:"M512 16C238.064 16 16 238.064 16 512s222.064 496 496 496 496-222.064 496-496S785.936 16 512 16zM307.488 346.672l409.008 0c5.184 0 10.064 1.232 14.464 3.296l-196.688 138.064c-17.104 17.12-27.696 17.12-44.8 0l-196.608-137.984C297.328 347.936 302.24 346.672 307.488 346.672zM750.816 652.192c0 18.96-15.36 34.336-34.304 34.336L307.488 686.528c-18.944 0-34.304-15.376-34.304-34.336L273.184 391.296c0-1.728 0.256-3.376 0.512-5.024l201.92 143.312c20.096 20.112 52.688 20.112 72.784 0l201.92-143.312c0.24 1.648 0.512 3.296 0.512 5.024L750.832 652.192z"})),fr=zo;var dt=y(require("react")),Ho=({width:t=24,color:e="#6EBCEE"})=>dt.default.createElement("svg",{id:"SuiSvg",xmlns:"http://www.w3.org/2000/svg",width:t,height:t*(40/28),viewBox:"-1 0 28 40"},dt.default.createElement("path",{d:"M1.8611,33.0541a13.6477,13.6477,0,0,0,23.7778,0,13.89,13.89,0,0,0,0-13.8909L15.1824.8368a1.6444,1.6444,0,0,0-2.8648,0L1.8611,19.1632A13.89,13.89,0,0,0,1.8611,33.0541ZM10.8044,9.5555,13.0338,5.648a.8222.8222,0,0,1,1.4324,0L23.043,20.68a10.8426,10.8426,0,0,1,.8873,8.8828,9.4254,9.4254,0,0,0-.4388-1.4586c-1.1847-3.0254-3.8634-5.36-7.9633-6.9393-2.8187-1.0819-4.618-2.6731-5.3491-4.73C9.2375,13.7848,10.221,10.8942,10.8044,9.5555ZM7.0028,16.2184,4.457,20.68a10.8569,10.8569,0,0,0,0,10.8582,10.6776,10.6776,0,0,0,16.1566,2.935,7.5061,7.5061,0,0,0,.0667-5.2913c-.87-2.1858-2.9646-3.9308-6.2252-5.1876-3.6857-1.4147-6.08-3.6233-7.1157-6.5625A9.297,9.297,0,0,1,7.0028,16.2184Z",style:{fill:e,fillRule:"evenodd"}})),dr=Ho;var pt=y(require("react")),$o=({width:t=24})=>pt.default.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",width:t,height:t,viewBox:"0 0 20 20",fill:"currentColor"},pt.default.createElement("path",{fillRule:"evenodd",d:"M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z",clipRule:"evenodd"})),pr=$o;var gt=y(require("react")),Vo=({width:t=24,color:e="#1e293b"})=>gt.default.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",width:t,height:t*65/47,fill:"none",viewBox:"0 0 24 24",stroke:e,strokeWidth:2},gt.default.createElement("path",{strokeLinecap:"round",strokeLinejoin:"round",d:"M5 13l4 4L19 7"})),gr=Vo;var Oe=y(require("react"));function hr(){let{innerWidth:t,innerHeight:e}=window;return{width:t,height:e}}function ht(){let[t,e]=(0,Oe.useState)(hr());return(0,Oe.useEffect)(()=>{function r(){e(hr())}return window.addEventListener("resize",r),()=>window.removeEventListener("resize",r)},[]),t}var H;(function(n){n[n.sm=640]="sm",n[n.md=768]="md",n[n.lg=1024]="lg",n[n.xl=1280]="xl",n[n["2xl"]=1536]="2xl"})(H||(H={}));var mr=y(q());var Ko=async()=>{if(typeof window=="undefined")return;let t=window.suiWallet;if(!t)return!1;try{let e=await t.hasPermissions();if(e||(e=await t.requestPermissions()),e){let r=await t.getAccounts();if(!r||r.length===0)return!1;let n=mr.default.namespace("sui")("account",r[0]),i=window.dispatchEvent(new Event("ethos-storage-changed"));m("connectSui","Dispatch event-storage-changed",n,i)}}catch(e){return console.log("Error connecting to Sui Wallet",e),!1}return!0},yr=Ko;var Jo=async t=>{E({action:"event",data:t})},mt=Jo;var De=y(require("react")),k=y(yt());function wt(){return wt=Object.assign||function(t){for(var e=1;e<arguments.length;e++){var r=arguments[e];for(var o in r)Object.prototype.hasOwnProperty.call(r,o)&&(t[o]=r[o])}return t},wt.apply(this,arguments)}function Qo(t,e){if(t==null)return{};var r={},o=Object.keys(t),n,i;for(i=0;i<o.length;i++)n=o[i],!(e.indexOf(n)>=0)&&(r[n]=t[n]);return r}function Ue(t){if(t===void 0)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}function Zo(t,e){t.prototype=Object.create(e.prototype),t.prototype.constructor=t,t.__proto__=e}var ce=function(t){Zo(e,t);function e(){var o;return o=t.call(this)||this,o.handleExpired=o.handleExpired.bind(Ue(o)),o.handleErrored=o.handleErrored.bind(Ue(o)),o.handleChange=o.handleChange.bind(Ue(o)),o.handleRecaptchaRef=o.handleRecaptchaRef.bind(Ue(o)),o}var r=e.prototype;return r.getValue=function(){return this.props.grecaptcha&&this._widgetId!==void 0?this.props.grecaptcha.getResponse(this._widgetId):null},r.getWidgetId=function(){return this.props.grecaptcha&&this._widgetId!==void 0?this._widgetId:null},r.execute=function(){var n=this.props.grecaptcha;if(n&&this._widgetId!==void 0)return n.execute(this._widgetId);this._executeRequested=!0},r.executeAsync=function(){var n=this;return new Promise(function(i,s){n.executionResolve=i,n.executionReject=s,n.execute()})},r.reset=function(){this.props.grecaptcha&&this._widgetId!==void 0&&this.props.grecaptcha.reset(this._widgetId)},r.handleExpired=function(){this.props.onExpired?this.props.onExpired():this.handleChange(null)},r.handleErrored=function(){this.props.onErrored&&this.props.onErrored(),this.executionReject&&(this.executionReject(),delete this.executionResolve,delete this.executionReject)},r.handleChange=function(n){this.props.onChange&&this.props.onChange(n),this.executionResolve&&(this.executionResolve(n),delete this.executionReject,delete this.executionResolve)},r.explicitRender=function(){if(this.props.grecaptcha&&this.props.grecaptcha.render&&this._widgetId===void 0){var n=document.createElement("div");this._widgetId=this.props.grecaptcha.render(n,{sitekey:this.props.sitekey,callback:this.handleChange,theme:this.props.theme,type:this.props.type,tabindex:this.props.tabindex,"expired-callback":this.handleExpired,"error-callback":this.handleErrored,size:this.props.size,stoken:this.props.stoken,hl:this.props.hl,badge:this.props.badge}),this.captcha.appendChild(n)}this._executeRequested&&this.props.grecaptcha&&this._widgetId!==void 0&&(this._executeRequested=!1,this.execute())},r.componentDidMount=function(){this.explicitRender()},r.componentDidUpdate=function(){this.explicitRender()},r.componentWillUnmount=function(){this._widgetId!==void 0&&(this.delayOfCaptchaIframeRemoving(),this.reset())},r.delayOfCaptchaIframeRemoving=function(){var n=document.createElement("div");for(document.body.appendChild(n),n.style.display="none";this.captcha.firstChild;)n.appendChild(this.captcha.firstChild);setTimeout(function(){document.body.removeChild(n)},5e3)},r.handleRecaptchaRef=function(n){this.captcha=n},r.render=function(){var n=this.props,i=n.sitekey,s=n.onChange,a=n.theme,c=n.type,l=n.tabindex,u=n.onExpired,d=n.onErrored,f=n.size,h=n.stoken,b=n.grecaptcha,A=n.badge,j=n.hl,R=Qo(n,["sitekey","onChange","theme","type","tabindex","onExpired","onErrored","size","stoken","grecaptcha","badge","hl"]);return De.default.createElement("div",wt({},R,{ref:this.handleRecaptchaRef}))},e}(De.default.Component);ce.displayName="ReCAPTCHA";ce.propTypes={sitekey:k.default.string.isRequired,onChange:k.default.func,grecaptcha:k.default.object,theme:k.default.oneOf(["dark","light"]),type:k.default.oneOf(["image","audio"]),tabindex:k.default.number,onExpired:k.default.func,onErrored:k.default.func,size:k.default.oneOf(["compact","normal","invisible"]),stoken:k.default.string,hl:k.default.string,badge:k.default.oneOf(["bottomright","bottomleft","inline"])};ce.defaultProps={onChange:function(){},theme:"light",type:"image",tabindex:0,size:"normal",badge:"bottomright"};var re=y(require("react")),Fr=y(yt()),Or=y(kr());function Et(){return Et=Object.assign||function(t){for(var e=1;e<arguments.length;e++){var r=arguments[e];for(var o in r)Object.prototype.hasOwnProperty.call(r,o)&&(t[o]=r[o])}return t},Et.apply(this,arguments)}function fi(t,e){if(t==null)return{};var r={},o=Object.keys(t),n,i;for(i=0;i<o.length;i++)n=o[i],!(e.indexOf(n)>=0)&&(r[n]=t[n]);return r}function di(t,e){t.prototype=Object.create(e.prototype),t.prototype.constructor=t,t.__proto__=e}var W={},pi=0;function Pt(t,e){return e=e||{},function(o){var n=o.displayName||o.name||"Component",i=function(a){di(c,a);function c(u,d){var f;return f=a.call(this,u,d)||this,f.state={},f.__scriptURL="",f}var l=c.prototype;return l.asyncScriptLoaderGetScriptLoaderID=function(){return this.__scriptLoaderID||(this.__scriptLoaderID="async-script-loader-"+pi++),this.__scriptLoaderID},l.setupScriptURL=function(){return this.__scriptURL=typeof t=="function"?t():t,this.__scriptURL},l.asyncScriptLoaderHandleLoad=function(d){var f=this;this.setState(d,function(){return f.props.asyncScriptOnLoad&&f.props.asyncScriptOnLoad(f.state)})},l.asyncScriptLoaderTriggerOnScriptLoaded=function(){var d=W[this.__scriptURL];if(!d||!d.loaded)throw new Error("Script is not loaded.");for(var f in d.observers)d.observers[f](d);delete window[e.callbackName]},l.componentDidMount=function(){var d=this,f=this.setupScriptURL(),h=this.asyncScriptLoaderGetScriptLoaderID(),b=e,A=b.globalName,j=b.callbackName,R=b.scriptId;if(A&&typeof window[A]!="undefined"&&(W[f]={loaded:!0,observers:{}}),W[f]){var O=W[f];if(O&&(O.loaded||O.errored)){this.asyncScriptLoaderHandleLoad(O);return}O.observers[h]=function(x){return d.asyncScriptLoaderHandleLoad(x)};return}var V={};V[h]=function(x){return d.asyncScriptLoaderHandleLoad(x)},W[f]={loaded:!1,observers:V};var M=document.createElement("script");M.src=f,M.async=!0;for(var L in e.attributes)M.setAttribute(L,e.attributes[L]);R&&(M.id=R);var N=function(D){if(W[f]){var lt=W[f],K=lt.observers;for(var _ in K)D(K[_])&&delete K[_]}};j&&typeof window!="undefined"&&(window[j]=function(){return d.asyncScriptLoaderTriggerOnScriptLoaded()}),M.onload=function(){var x=W[f];x&&(x.loaded=!0,N(function(D){return j?!1:(D(x),!0)}))},M.onerror=function(){var x=W[f];x&&(x.errored=!0,N(function(D){return D(x),!0}))},document.body.appendChild(M)},l.componentWillUnmount=function(){var d=this.__scriptURL;if(e.removeOnUnmount===!0)for(var f=document.getElementsByTagName("script"),h=0;h<f.length;h+=1)f[h].src.indexOf(d)>-1&&f[h].parentNode&&f[h].parentNode.removeChild(f[h]);var b=W[d];b&&(delete b.observers[this.asyncScriptLoaderGetScriptLoaderID()],e.removeOnUnmount===!0&&delete W[d])},l.render=function(){var d=e.globalName,f=this.props,h=f.asyncScriptOnLoad,b=f.forwardedRef,A=fi(f,["asyncScriptOnLoad","forwardedRef"]);return d&&typeof window!="undefined"&&(A[d]=typeof window[d]!="undefined"?window[d]:void 0),A.ref=b,(0,re.createElement)(o,A)},c}(re.Component),s=(0,re.forwardRef)(function(a,c){return(0,re.createElement)(i,Et({},a,{forwardedRef:c}))});return s.displayName="AsyncScriptLoader("+n+")",s.propTypes={asyncScriptOnLoad:Fr.default.func},(0,Or.default)(s,o)}}var Ur="onloadcallback",gi="grecaptcha";function hi(){return typeof window!="undefined"&&window.recaptchaOptions||{}}function mi(){var t=hi(),e=t.useRecaptchaNet?"recaptcha.net":"www.google.com";return"https://"+e+"/recaptcha/api.js?onload="+Ur+"&render=explicit"}var Dr=Pt(mi,{callbackName:Ur,globalName:gi})(ce);var Wr=Dr;var Cc=typeof window!="undefined"&&window.location.origin.indexOf("http://localhost")===0?"http://localhost:3000":"https://ethoswallet.onrender.com",jr="6LcXUDshAAAAAPTZ3E7xi3-335IA9rncYVoey_ls";var $n=y(Hn()),fs=async t=>new Promise(e=>{$n.default.toDataURL(t,{width:300,margin:2,color:{dark:"#000",light:"#FFF"}},(r,o)=>{if(r)return console.error(r);e(o)})}),Vn=fs;var ds=async()=>{let{walletAppUrl:t}=w();return new Promise((e,r)=>{let o=n=>{if(n.origin===t){let{action:i,data:s}=n.data;if(i!=="connect")return;window.removeEventListener("message",o),e(s)}};window.addEventListener("message",o),E({action:"connect"})})},Kn=ds;var ps=({isOpen:t,onClose:e,socialLogin:r=[]})=>{let[o,n]=(0,p.useState)(!1),[i,s]=(0,p.useState)(!1),[a,c]=(0,p.useState)(""),[l,u]=(0,p.useState)(!1),{width:d}=ht(),{appId:f,walletAppUrl:h}=w(),b=(0,p.useRef)(null),[A,j]=(0,p.useState)(null),[R,O]=(0,p.useState)("email"),V=async()=>{if(s(!0),b&&b.current)try{await b.current.execute()}catch(_){console.log("CAPTCHA ERROR",_),M()}else M()},M=async()=>{await ge({email:a,appId:f}),c(""),s(!1),u(!0),mt({action:"send_email",category:"sign_in",label:a,value:1})},L=_=>{ge({provider:_,appId:f})},N=()=>{n(!1),O("ethos"),n(!0)},x=async()=>{n(!1),O("ethosMobile");let{connectionUrl:_}=await Kn(),po=await Vn(_);j(po),await Ne(),e&&e()},D=async()=>{n(!1),O("sui");let _=await yr();_?e&&e():n(!0),mt({action:"connect",category:"sign_in",label:"sui",value:_?1:0})},lt=()=>{n(!1),j(null),O("email")},K=_=>{switch(_){case"ethos":return p.default.createElement(cr,{width:17});case"sui":return p.default.createElement(dr,{width:15});case"email":return p.default.createElement(fr,{width:21});default:return p.default.createElement(pr,{width:17})}};return p.default.createElement(p.default.Fragment,null,p.default.createElement("div",{style:hs(t),role:"dialog"},p.default.createElement("div",{style:ms(),onClick:()=>console.log("clicked")}),p.default.createElement(Wr,{sitekey:jr,ref:b,size:"invisible",onChange:M}),p.default.createElement("div",{style:ys()},p.default.createElement("div",{style:ws(d)},p.default.createElement("div",{style:vs(d,l)},l?p.default.createElement("div",{style:{textAlign:"center",margin:"24px"}},p.default.createElement("div",{style:Es()},p.default.createElement(gr,{color:"#16a34a"})),p.default.createElement("br",null),p.default.createElement("h3",{style:Yt()},"Check your email"),p.default.createElement("div",{style:gs()},p.default.createElement("p",{style:{padding:"12px"}},"An email has been sent to you with a link to login."),p.default.createElement("p",null,"If you don't receive it, please check your spam folder or contact us at:"),p.default.createElement("p",{style:{justifyContent:"center",paddingTop:"12px"}},"support@ethoswallet.xyz"))):p.default.createElement(p.default.Fragment,null,p.default.createElement("div",{style:Ss()},p.default.createElement("h3",{style:bs()},"Sign Up or Log In"),p.default.createElement("div",{style:Cs(),onClick:e},"\u2715")),p.default.createElement("div",{style:xs(d)},p.default.createElement("div",{style:Ps(d)},p.default.createElement("div",{style:at(R==="email"),onClick:lt},p.default.createElement("button",{style:ct()},K("email"),"Email or Social Login")),p.default.createElement("div",{style:at(R==="ethos"),onClick:N},p.default.createElement("button",{style:ct()},K("ethos"),"Ethos Wallet")),p.default.createElement("div",{style:at(R==="ethosMobile"),onClick:x},p.default.createElement("button",{style:ct()},K("ethos"),"Ethos Wallet Mobile")),p.default.createElement("div",{style:at(R==="sui"),onClick:D},p.default.createElement("button",{style:ct()},K("sui"),"Sui Test Wallet")),o&&p.default.createElement("div",{style:Rs()},"You do not have the necessary wallet extension installed.")),p.default.createElement("div",{style:Is(d)},A?p.default.createElement("div",{style:Ts()},p.default.createElement("h3",{style:Ls()},"Connect Mobile Wallet"),p.default.createElement("p",{style:_s()},"Scan the QR code with a mobile device."),p.default.createElement("div",null,p.default.createElement("img",{src:A}))):p.default.createElement(p.default.Fragment,null,(r||[]).length>0&&p.default.createElement("div",null,p.default.createElement("h3",{style:Yt()},"Sign up or log in with:"),p.default.createElement("div",{style:As()},r.indexOf("google")>-1&&p.default.createElement("div",{style:Jn(),onClick:()=>L("google")},p.default.createElement(lr,{width:36})),r.indexOf("github")>-1&&p.default.createElement("div",{style:Jn(),onClick:()=>L("github")},p.default.createElement(ur,{width:36})))),p.default.createElement("h3",{style:Yt()},"Sign up or log in with a link"),i?p.default.createElement("div",{style:Bs()},p.default.createElement(ke,{width:50})):p.default.createElement(p.default.Fragment,null,p.default.createElement("form",{onSubmit:V},p.default.createElement("input",{style:Ms(),type:"email",placeholder:"Email address",value:a,onChange:_=>c(_.target.value)}),p.default.createElement("button",{style:Ns(d),type:"submit"},"Send")),p.default.createElement("div",{style:ks()},"Advanced:\xA0",p.default.createElement("a",{href:`${h}/extensions`,style:Yn(),target:"_blank",rel:"noopener noreferrer"},"Chrome Extension"),"\xA0or\xA0",p.default.createElement("a",{href:`${h}/mobile`,style:Yn(),target:"_blank",rel:"noopener noreferrer"},"Mobile App"))))))))))))},gs=()=>({color:"#6B7280",fontSize:"0.875rem",lineHeight:"1.25rem"}),hs=t=>({display:t?"block":"none",position:"relative",zIndex:"10"}),ms=()=>({position:"fixed",top:"0px",right:"0px",bottom:"0px",left:"0px",backgroundColor:"rgb(107 114 128 / .75)"}),ys=()=>({position:"fixed",zIndex:"99",top:"0px",right:"0px",bottom:"0px",left:"0px",overflowY:"auto"}),ws=t=>{let e={display:"flex",alignItems:"flex-end",justifyContent:"center",minHeight:"100%",padding:"1rem",textAlign:"center"},r={padding:"0",alignItems:"center"};return t<H.sm?e:{...e,...r}},vs=(t,e)=>{let r={overflow:"hidden",position:"relative",backgroundColor:"#ffffff",transitionProperty:"all",textAlign:"left",borderRadius:"0.5rem",boxShadow:"0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"},o={marginTop:"2rem",marginBottom:"2rem",width:"100%",maxWidth:e?"28rem":"40rem"};return t<H.sm?r:{...r,...o}},Cs=()=>({backgroundColor:"#F9FAFB",borderRadius:"100%",width:"24px",height:"24px",textAlign:"center",color:"#A0AEBA",cursor:"pointer"}),Ss=()=>({borderBottom:"1px solid rgb(241 245 249)",padding:"12px",display:"flex",justifyContent:"space-between"}),bs=()=>({fontSize:"1rem",fontWeight:"500",margin:"0"}),xs=t=>{let e={justifyContent:"space-between"},r={display:"flex"};return t<H.sm?e:{...e,...r}},Es=()=>({display:"flex",margin:"auto",backgroundColor:"#D1FAE5",justifyContent:"center",alignItems:"center",width:"3rem",height:"3rem",borderRadius:"9999px"}),Ps=t=>{let e={padding:"18px",gap:"6px",display:"flex",flexDirection:"column",borderBottom:"1px solid rgb(241 245 249)"},r={width:"300px",padding:"24px 12px",borderRight:"1px solid rgb(241 245 249)"};return t<H.sm?e:{...e,...r}},at=(t=!1)=>({padding:"12px",backgroundColor:t?"#F3E8FE":"#F9FAFB",borderRadius:"0.5rem",fontWeight:"500",cursor:"pointer"}),ct=()=>({display:"flex",alignItems:"center",justifyContent:"start",gap:"0.5rem",border:"none",background:"none",textDecoration:"none"}),As=()=>({padding:"12px 0",display:"flex",gap:"6px"}),Jn=()=>({cursor:"pointer"}),Is=t=>{let e={padding:"18px",display:"flex",flexDirection:"column",gap:"12px",flexGrow:"1"},r={padding:"24px"};return t<H.sm?e:{...e,...r}},Ts=()=>({display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}),Yt=()=>({fontWeight:"500",margin:"0"}),Ls=()=>({fontWeight:"500",margin:"0",textAlign:"center"}),_s=()=>({margin:"6px 0",fontSize:"smaller",textAlign:"center"}),Ms=()=>({border:"1px solid rgb(203 213 225)",borderRadius:"0.5rem",padding:"12px",width:"90%"}),Ns=t=>{let e={marginTop:"0.5rem",border:"1px solid rgb(203 213 225)",borderRadius:"0.5rem",padding:"6px",backgroundColor:"#761AC7",color:"#FFFFFF",textDecoration:"none",minWidth:"6rem"},r={marginTop:"1rem"};return t<H.sm?e:{...e,...r}},Bs=()=>({display:"flex",justifyContent:"center",padding:"45px 0"}),Rs=()=>({fontSize:"small",textAlign:"center",paddingTop:"6px"}),ks=()=>({paddingTop:"6px",fontSize:"small",paddingLeft:"3px"}),Yn=()=>({color:"#751ac7",textDecoration:"underline",fontWeight:400}),Gn=ps;var Fs=t=>{let{children:e,socialLogin:r,onClick:o,...n}=t,[i,s]=X.default.useState(!1);return X.default.createElement(X.default.Fragment,null,X.default.createElement(Gn,{socialLogin:r,isOpen:i,onClose:()=>{var l;(l=document.getElementsByTagName("html").item(0))==null||l.setAttribute("style",""),s(!1)}}),X.default.createElement(sr,{onClick:l=>{var u;s(!0),(u=document.getElementsByTagName("html").item(0))==null||u.setAttribute("style","overflow: hidden;"),o&&o(l)},...n},e||X.default.createElement(X.default.Fragment,null,"Sign In")))},Qn=Fs;var Zn=y(q());var Os=async(t=!1)=>{let{walletAppUrl:e}=w();return Zn.default.namespace("auth")("access_token",null),new Promise(r=>{let o=n=>{if(m("logout","Message origin: ",n.origin,e,n),n.origin===e){let{action:i,data:s}=n.data;m("logout","message2",i,s),i==="user"&&r(s==null?void 0:s.user)}};window.removeEventListener("message",o),window.addEventListener("message",o),E({action:"logout",data:{wallet:t}})})},Xn=Os;var Us=async({signData:t,onComplete:e})=>{let{walletAppUrl:r}=w(),o=n=>{if(n.origin===r){let{action:i,data:s}=n.data;if(i!=="sign")return;let{state:a,response:c}=s;switch(a){case"complete":e&&e(c),window.removeEventListener("message",o);break;default:break}}};window.addEventListener("message",o),E({action:"sign",data:{signData:t}}),B(!0)},eo=Us;var Ds=async({relativePath:t,method:e="GET",body:r})=>{let{walletAppUrl:o}=w(),n={method:e,headers:{"Content-Type":"application/json",Accept:"application/json"}};r&&(n.body=JSON.stringify(r));let i=await fetch(`${o}/api/${t}`,n),s=await i.json(),{status:a}=i;return{json:s,status:a}},z=Ds;var Ws=async({signer:t,details:e,onSigned:r,onSent:o,onComplete:n,onConfirmed:i,onCanceled:s})=>{if(console.log("TRANSACT",t,e),t.extension){let l=t.transact(e);n&&n(l);return}let{walletAppUrl:a}=w(),c=l=>{if(l.origin===a){let{action:u,data:d}=l.data;if(u!=="transact")return;let{state:f,response:h}=d;switch(f){case"signed":r&&r(h);break;case"sent":o&&o(h);break;case"complete":n&&n(h),window.removeEventListener("message",c);break;case"confirmed":i&&i(h),window.removeEventListener("message",c);break;case"canceled":s&&s(),window.removeEventListener("message",c);break;default:break}}};window.addEventListener("message",c),console.log("POST TRANSACTION",e),E({action:"transact",data:{details:e}}),B(!0)},to=Ws;var js=async t=>{let{network:e,chain:r}=w(),{json:{balance:o}}=await z({relativePath:"wallet/balance",method:"POST",body:{network:e,address:t,chain:r}});return o},ro=js;var qs=async t=>{let{chain:e}=w(),{json:{nfts:r},status:o}=await z({relativePath:`nfts/${t}?chain=${e}`});return o!==200?(m("walletNfts","Error with wallet NFTs",o),[]):r},no=qs;var zs=async(t,e)=>{let{json:{balance:r,nfts:o},status:n}=await z({relativePath:"wallet/contents",method:"POST",body:{chain:e,address:t}});if(n!==200){m("walletContents","Error with wallet contents",n);return}return{balance:r,nfts:o}},oo=zs;var Hs=async({network:t,walletAddress:e,contractAddress:r,contractABI:o})=>{let{json:{transferInformation:n}}=await z({relativePath:"contracts/transfers",method:"POST",body:{network:t,walletAddress:e,contractAddress:r,contractABI:o}});return n},io=Hs;var $s=async({network:t,contractAddress:e,contractABI:r,functionName:o,inputValues:n})=>{let{json:{response:i}}=await z({relativePath:"contracts/query",method:"POST",body:{network:t,address:e,abi:r,functionName:o,inputValues:n}});return i},so=$s;var Vs=()=>{B(!0)},ao=Vs;var Ks=()=>{B(!1)},co=Ks;var Js=async({address:t})=>{let{walletAppUrl:e}=w();return new Promise((r,o)=>{let n=i=>{if(i.origin===e){let{action:s,data:a}=i.data;if(s!=="drip")return;window.removeEventListener("message",n),console.log("DATA",a),r(a)}};window.addEventListener("message",n),E({action:"drip",data:{address:t}})})},lo=Js;var uo=y(require("react"));var Ys=()=>(0,uo.useContext)(Be),fo=Ys;var Gs={initialize:_e,login:ge,logout:Xn,sign:eo,transact:to,getWalletBalance:ro,getWalletNfts:no,getWalletContents:oo,activeUser:Te,tokenTransfers:io,query:so,showWallet:ao,hideWallet:co,getProvider:Le,dripSui:lo,useProviderAndSigner:fo};
 /*! store2 - v2.13.2 - 2022-03-14
 * Copyright (c) 2022 Nathan Bubna; Licensed (MIT OR GPL-3.0) */
 /** @license React v16.13.1
