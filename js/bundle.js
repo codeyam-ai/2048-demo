@@ -79,6 +79,7 @@ window.requestAnimationFrame(function () {
     {
       ethosConfiguration,
       onWalletConnected: async ({ provider, signer }) => {
+        console.log("ON WALLET CONNECTED", provider, signer)
         document.getElementById('start-loader').style = "display: none;";
         document.getElementById('loading-messages').style = "display: none;";
 
