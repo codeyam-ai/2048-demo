@@ -604,10 +604,10 @@ escape-string-regexp@^1.0.0:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha512-vbRorB5FUQWvla16U8R/qgaFIya2qGzwDrNmCZuYKrbdSUMG6I1ZCGQRefkRVhuOkIGVne7BQ35DSfo1qvJqFg==
 
-ethos-wallet-beta@^0.0.143:
-  version "0.0.143"
-  resolved "https://registry.yarnpkg.com/ethos-wallet-beta/-/ethos-wallet-beta-0.0.143.tgz#0adffb6c0088e0e583b376c50b4a7494e072e5bd"
-  integrity sha512-w8m9hL7nWEfkOhVMluCTY9VDb5i4PzShABU8UL97QIuH4KonEUCWgb0pJL4/+DC8YF+cyjuP0VqMs7VAGGRQxw==
+ethos-wallet-beta@^0.0.144:
+  version "0.0.144"
+  resolved "https://registry.yarnpkg.com/ethos-wallet-beta/-/ethos-wallet-beta-0.0.144.tgz#83f92923bcd1929d6de3e8513493d6213c9b8290"
+  integrity sha512-fj2I39eKR8f+SwQsGQcUx0E5pQMD0o60RK1NJtCfzpudBiLuZ7TTc5j8A2bYdHOqDJbn6D+8S4HcfuZvxcERXA==
   dependencies:
     "@superstate/react" "^0.1.0"
     qrcode "^1.5.1"
