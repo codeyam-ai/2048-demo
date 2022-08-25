@@ -137,17 +137,11 @@ window.requestAnimationFrame(function () {
       ethos.transact({
         signer: _signer,
         details,
-        // onSigned: () => setLoading(true),
-        onComplete: async (result) => {
-          const completedResult = await result;
-          console.log("COMPLETED RESULT", result)
+        onComplete: async () => {
           ethos.hideWallet();
           await setMaxClaimedValue();
 
           loader.style = 'display: none';
-          // setMessage(null);
-          // setLoading(false);
-          // oMint();
         }
       })
     } catch (error) {
