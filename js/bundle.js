@@ -36,6 +36,7 @@ window.requestAnimationFrame(function () {
 
     let maxClaimedItem = { value: 0 };
     for (const item of nfts) {
+      if (!item.description) continue;
       const value = parseInt(item.description.slice("This player has unlocked the ".length))
       if (!value || value < maxClaimedItem.value) continue;
       item.value = value;
