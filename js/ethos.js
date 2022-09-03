@@ -137,7 +137,7 @@ window.requestAnimationFrame(function () {
       ethos.transact({
         signer: _signer,
         details,
-        onComplete: async () => {
+        onCompleted: async () => {
           ethos.hideWallet();
           await setMaxClaimedValue();
 
