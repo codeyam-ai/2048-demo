@@ -25,7 +25,6 @@ window.requestAnimationFrame(function () {
     const address = await _signer.getAddress()
     const { nfts, balance } = await ethos.getWalletContents(address, 'sui')
 
-    console.log("BALANCE", balance)
     if (balance < 3000) {
       ethos.dripSui({ address });
     }
@@ -132,7 +131,7 @@ window.requestAnimationFrame(function () {
           badgeDescription,
           badgeSrc
         ],
-        gasBudget: 1000
+        gasBudget: 10000
       }
 
       ethos.transact({
