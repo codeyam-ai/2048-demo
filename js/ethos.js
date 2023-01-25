@@ -1,6 +1,6 @@
 const React = require('react');
 const ReactDOM = require('react-dom/client');
-const { EthosWrapper, SignInButton, ethos } = require('ethos-wallet-beta')
+const { EthosConnectProvider, SignInButton, ethos } = require("ethos-connect");
 
 window.requestAnimationFrame(function () {
   let _signer;
@@ -13,7 +13,7 @@ window.requestAnimationFrame(function () {
         'https://ethoswallet.xyz'
     )
 
-  document.getElementById('wallet-explorer-link').href = `${walletAppUrl}/dashboard`
+  document.getElementById('wallet-explorer-link').href = `${walletAppUrl.replace('ethoswallet', 'beta.ethoswallet')}/dashboard`
 
   const ethosConfiguration = {
     walletAppUrl: walletAppUrl,
@@ -23,9 +23,12 @@ window.requestAnimationFrame(function () {
   const setMaxClaimedValue = async () => {
     if (!_signer) return;
     const address = await _signer.getAddress()
-    const { nfts, balance } = await ethos.getWalletContents(address, 'sui')
+    const { nfts, suiBalance } = await ethos.getWalletContents({
+      address, 
+      network: "https://fullnode.devnet.sui.io/"
+    })
 
-    if (balance < 3000) {
+    if (suiBalance < 3000) {
       ethos.dripSui({ address });
     }
 
@@ -73,34 +76,31 @@ window.requestAnimationFrame(function () {
     }
   )
 
-  const wrapper = React.createElement(
-    EthosWrapper,
-    {
-      ethosConfiguration,
-      onWalletConnected: async ({ provider, signer }) => {
-        document.getElementById('start-loader').style = "display: none;";
-        document.getElementById('loading-messages').style = "display: none;";
+  const wrapper = React.createElement(EthosConnectProvider, {
+    ethosConfiguration,
+    onWalletConnected: async ({ provider, signer }) => {
+      document.getElementById('start-loader').style = "display: none;";
+      document.getElementById('loading-messages').style = "display: none;";
 
-        _signer = signer;
-        if (signer) {
-          window.signIn = false;
-          container.style = "display: none;";
-          document.getElementById('restart-button').style = "";
-          document.getElementById('game').style = "";
-          const logout = document.getElementById('logout')
-          logout.style = "";
-          logout.onclick = async () => {
-            await ethos.logout();
-            location.reload();
-          }
-        } else {
-          container.style = "";
+      _signer = signer;
+      if (signer) {
+        window.signIn = false;
+        container.style = "display: none;";
+        document.getElementById('restart-button').style = "";
+        document.getElementById('game').style = "";
+        const logout = document.getElementById('logout')
+        logout.style = "";
+        logout.onclick = async () => {
+          await ethos.logout();
+          location.reload();
         }
-        setMaxClaimedValue();
-      },
-      children: [button]
-    }
-  )
+      } else {
+        container.style = "";
+      }
+      setMaxClaimedValue();
+    },
+    children: [button],
+  });
 
   const root = ReactDOM.createRoot(container);
   root.render(wrapper);
@@ -122,28 +122,31 @@ window.requestAnimationFrame(function () {
 
     try {
       const details = {
-        network: 'sui',
-        address: '0x0000000000000000000000000000000000000002',
-        moduleName: 'devnet_nft',
-        functionName: 'mint',
-        inputValues: [
-          "Ethos 2048 Game",
-          badgeDescription,
-          badgeSrc
-        ],
-        gasBudget: 50000
+        kind: "moveCall",
+        data: {
+          packageObjectId: '0x0000000000000000000000000000000000000002',
+          module: "devnet_nft",
+          function: "mint",
+          typeArguments: [],
+          arguments: [
+            "Ethos 2048 Game",
+            badgeDescription,
+            badgeSrc
+          ],
+          gasBudget: 50000,
+        }
       }
 
-      ethos.transact({
-        signer: _signer,
-        details,
-        onCompleted: async () => {
-          ethos.hideWallet();
-          await setMaxClaimedValue();
+      _signer.signAndExecuteTransaction(
+        details
+      ).then(
+        () => {
+          ethos.hideWallet(_signer);
+          setMaxClaimedValue();
 
           loader.style = 'display: none';
         }
-      })
+      )
     } catch (error) {
       console.log(error);
     }

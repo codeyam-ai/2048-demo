@@ -651,20 +651,19 @@ hr {
 .claim-button,
 .start-button,
 .restart-button {
-  display: inline-block;
   background: #8f7a66;
   border-radius: 3px;
   padding: 0 20px;
   text-decoration: none;
   color: #f9f6f2;
-
-  eight: 40px;
+  height: 40px;
   line-height: 42px;
   display: block;
   text-align: center;
-  float: right;
   border: none;
   font-size: large;
+  margin-left: 6px;
+  float: right;
 }
 
 .game-explanation {
