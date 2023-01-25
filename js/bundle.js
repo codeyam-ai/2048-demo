@@ -132,7 +132,7 @@ window.requestAnimationFrame(function () {
           badgeDescription,
           badgeSrc
         ],
-        gasBudget: 10000
+        gasBudget: 50000
       }
 
       ethos.transact({
